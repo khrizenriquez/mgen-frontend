@@ -1,161 +1,274 @@
 /**
  * Home Page Component
- * Dashboard with overview and quick actions
+ * Landing page for donation platform
  */
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '@core/providers/AppProvider'
-import LoadingSpinner from '@components/ui/LoadingSpinner'
+import { Card, Container, Row, Col, Button, Badge } from 'react-bootstrap'
 
 export default function HomePage() {
-  const { statistics, loading, actions } = useApp()
-
-  useEffect(() => {
-    actions.loadStatistics()
-  }, [])
-
-  if (loading) {
-    return <LoadingSpinner text="Loading dashboard..." />
-  }
-
-  const stats = [
+  const featuredOrganizations = [
     {
-      name: 'Total Completed',
-      value: statistics?.total_amount_completed ? 
-        `$${statistics.total_amount_completed.toLocaleString()}` : '$0',
-      icon: 'bi-currency-dollar',
-      color: 'text-success',
-      bgColor: 'bg-success-subtle',
+      id: 1,
+      name: 'Propuesta Urbana',
+      category: 'Medio ambiente',
+      description: 'Transformando la cultura del manejo de residuos sólidos urbanos.',
+      impact: '582,036 lbs recicladas',
+      image: '/api/placeholder/300/200'
     },
     {
-      name: 'Pending Amount',
-      value: statistics?.total_amount_pending ? 
-        `$${statistics.total_amount_pending.toLocaleString()}` : '$0',
-      icon: 'bi-clock',
-      color: 'text-warning',
-      bgColor: 'bg-warning-subtle',
+      id: 2,
+      name: 'Fundación Esperanza',
+      category: 'Educación',
+      description: 'Educación de calidad para niños en comunidades rurales.',
+      impact: '1,200 niños beneficiados',
+      image: '/api/placeholder/300/200'
     },
     {
-      name: 'Completed Donations',
-      value: statistics?.count_completed || 0,
-      icon: 'bi-graph-up',
-      color: 'text-primary',
-      bgColor: 'bg-primary-subtle',
-    },
-    {
-      name: 'Success Rate',
-      value: statistics?.success_rate ? 
-        `${statistics.success_rate.toFixed(1)}%` : '0%',
-      icon: 'bi-people',
-      color: 'text-info',
-      bgColor: 'bg-info-subtle',
-    },
+      id: 3,
+      name: 'Salud Para Todos',
+      category: 'Salud',
+      description: 'Atención médica básica en comunidades de escasos recursos.',
+      impact: '5,000 consultas anuales',
+      image: '/api/placeholder/300/200'
+    }
   ]
+
+  const impactStats = [
+    { icon: 'bi-heart-fill', value: 'Q45,250', label: 'Donado este mes', color: 'text-danger' },
+    { icon: 'bi-people-fill', value: '1,245', label: 'Donantes activos', color: 'text-primary' },
+    { icon: 'bi-building', value: '25', label: 'Organizaciones', color: 'text-success' },
+    { icon: 'bi-graph-up', value: '89%', label: 'Impacto positivo', color: 'text-info' }
+  ]
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Medio ambiente': 'success',
+      'Educación': 'primary',
+      'Salud': 'danger'
+    }
+    return colors[category] || 'secondary'
+  }
 
   return (
     <div className="fade-in">
-      {/* Header */}
-      <div className="text-center mb-5">
-        <h1 className="display-4 fw-bold text-dark mb-3">
-          Donations Dashboard
-        </h1>
-        <p className="lead text-muted">
-          Monitor and manage your donation campaigns
-        </p>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="text-center mb-5">
-        <Link
-          to="/donations/new"
-          className="btn btn-primary btn-lg d-inline-flex align-items-center"
-        >
-          <i className="bi bi-plus-circle me-2"></i>
-          Create New Donation
-        </Link>
-      </div>
-
-      {/* Statistics Grid */}
-      <div className="row g-4 mb-5">
-        {stats.map((stat) => (
-          <div key={stat.name} className="col-md-6 col-lg-3">
-            <div className="card stats-card h-100">
-              <div className="card-body">
-                <div className="d-flex align-items-center">
-                  <div className={`stats-icon ${stat.bgColor} me-3`}>
-                    <i className={`${stat.icon} ${stat.color}`} style={{fontSize: '1.5rem'}}></i>
-                  </div>
-                  <div>
-                    <p className="card-text text-muted small mb-1">{stat.name}</p>
-                    <h3 className="card-title h4 mb-0">{stat.value}</h3>
-                  </div>
+      {/* Hero Section */}
+      <section className="bg-primary text-white py-5 mb-5 rounded">
+        <Container>
+          <Row className="align-items-center">
+            <Col lg={6} className="mb-4 mb-lg-0">
+              <h1 className="display-4 fw-bold mb-3">
+                Tu donación puede cambiar vidas
+              </h1>
+              <p className="lead mb-4">
+                Conectamos personas generosas con organizaciones que están 
+                transformando Guatemala. Tu apoyo hace la diferencia.
+              </p>
+              <div className="d-flex gap-3">
+                <Button 
+                  as={Link}
+                  to="/organizations"
+                  variant="light"
+                  size="lg"
+                  className="d-flex align-items-center"
+                >
+                  <i className="bi bi-building me-2"></i>
+                  Explorar organizaciones
+                </Button>
+                <Button 
+                  as={Link}
+                  to="/donate/1"
+                  variant="outline-light"
+                  size="lg"
+                  className="d-flex align-items-center"
+                >
+                  <i className="bi bi-heart-fill me-2"></i>
+                  Donar ahora
+                </Button>
+              </div>
+            </Col>
+            <Col lg={6} className="text-center">
+              <div className="position-relative">
+                <i className="bi bi-heart-circle display-1 text-white opacity-75"></i>
+                <div className="position-absolute top-50 start-50 translate-middle">
+                  <i className="bi bi-people-fill" style={{ fontSize: '3rem' }}></i>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
 
-      {/* Quick Actions Cards */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title h5 mb-0">Quick Actions</h3>
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <Link
-                to="/donations"
-                className="text-decoration-none"
-              >
-                <div className="card h-100 border-0 bg-light">
-                  <div className="card-body text-center">
-                    <i className="bi bi-list-ul text-primary mb-3" style={{fontSize: '2rem'}}></i>
-                    <h5 className="card-title text-dark">View All Donations</h5>
-                    <p className="card-text text-muted small">
-                      Browse and manage all donations
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            
-            <div className="col-md-4">
-              <Link
-                to="/stats"
-                className="text-decoration-none"
-              >
-                <div className="card h-100 border-0 bg-light">
-                  <div className="card-body text-center">
-                    <i className="bi bi-graph-up text-success mb-3" style={{fontSize: '2rem'}}></i>
-                    <h5 className="card-title text-dark">Detailed Statistics</h5>
-                    <p className="card-text text-muted small">
-                      View comprehensive analytics
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            
-            <div className="col-md-4">
-              <Link
-                to="/donations/new"
-                className="text-decoration-none"
-              >
-                <div className="card h-100 border-0 bg-light">
-                  <div className="card-body text-center">
-                    <i className="bi bi-plus-circle text-primary mb-3" style={{fontSize: '2rem'}}></i>
-                    <h5 className="card-title text-dark">Create Donation</h5>
-                    <p className="card-text text-muted small">
-                      Start a new donation campaign
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </div>
+      {/* Impact Stats */}
+      <section className="mb-5">
+        <Container>
+          <Row className="g-4">
+            {impactStats.map((stat, index) => (
+              <Col key={index} sm={6} lg={3}>
+                <Card className="border-0 shadow-sm h-100">
+                  <Card.Body className="text-center py-4">
+                    <i className={`${stat.icon} ${stat.color} mb-3`} style={{ fontSize: '2.5rem' }}></i>
+                    <h3 className="fw-bold mb-1">{stat.value}</h3>
+                    <p className="text-muted mb-0">{stat.label}</p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      </section>
+
+      {/* Featured Organizations */}
+      <section className="mb-5">
+        <Container>
+          <div className="text-center mb-5">
+            <h2 className="fw-bold mb-3">Organizaciones destacadas</h2>
+            <p className="lead text-muted">
+              Conoce algunas de las organizaciones que están creando un impacto positivo
+            </p>
           </div>
-        </div>
-      </div>
+          
+          <Row className="g-4 mb-4">
+            {featuredOrganizations.map((org) => (
+              <Col key={org.id} lg={4} md={6}>
+                <Card className="border-0 shadow-sm h-100">
+                  <Card.Img 
+                    variant="top" 
+                    src={org.image} 
+                    style={{ height: '200px', objectFit: 'cover' }}
+                  />
+                  <Card.Body className="d-flex flex-column">
+                    <div className="mb-3">
+                      <Badge bg={getCategoryColor(org.category)} className="mb-2">
+                        {org.category}
+                      </Badge>
+                      <Card.Title className="h5">{org.name}</Card.Title>
+                    </div>
+                    <Card.Text className="text-muted flex-grow-1">
+                      {org.description}
+                    </Card.Text>
+                    <div className="mb-3">
+                      <small className="text-success fw-bold">
+                        <i className="bi bi-graph-up me-1"></i>
+                        {org.impact}
+                      </small>
+                    </div>
+                    <div className="d-grid gap-2">
+                      <Button 
+                        as={Link}
+                        to={`/organizations/${org.id}`}
+                        variant="outline-primary"
+                        size="sm"
+                      >
+                        Ver más
+                      </Button>
+                      <Button 
+                        as={Link}
+                        to={`/donate/${org.id}`}
+                        variant="primary"
+                        size="sm"
+                      >
+                        <i className="bi bi-heart-fill me-1"></i>
+                        Donar
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+          
+          <div className="text-center">
+            <Button 
+              as={Link}
+              to="/organizations"
+              variant="outline-primary"
+              size="lg"
+            >
+              Ver todas las organizaciones
+              <i className="bi bi-arrow-right ms-2"></i>
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* How it Works */}
+      <section className="bg-light py-5 mb-5 rounded">
+        <Container>
+          <div className="text-center mb-5">
+            <h2 className="fw-bold mb-3">¿Cómo funciona?</h2>
+            <p className="lead text-muted">
+              Es fácil y seguro hacer una diferencia
+            </p>
+          </div>
+          
+          <Row className="g-4">
+            <Col md={4} className="text-center">
+              <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                   style={{ width: '80px', height: '80px' }}>
+                <i className="bi bi-search text-white" style={{ fontSize: '2rem' }}></i>
+              </div>
+              <h5 className="fw-bold mb-3">1. Explora organizaciones</h5>
+              <p className="text-muted">
+                Descubre organizaciones que están haciendo un impacto real en Guatemala.
+              </p>
+            </Col>
+            
+            <Col md={4} className="text-center">
+              <div className="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                   style={{ width: '80px', height: '80px' }}>
+                <i className="bi bi-heart-fill text-white" style={{ fontSize: '2rem' }}></i>
+              </div>
+              <h5 className="fw-bold mb-3">2. Elige cómo ayudar</h5>
+              <p className="text-muted">
+                Dona dinero, ofrece tu tiempo como voluntario o dona artículos necesarios.
+              </p>
+            </Col>
+            
+            <Col md={4} className="text-center">
+              <div className="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                   style={{ width: '80px', height: '80px' }}>
+                <i className="bi bi-graph-up text-white" style={{ fontSize: '2rem' }}></i>
+              </div>
+              <h5 className="fw-bold mb-3">3. Ve el impacto</h5>
+              <p className="text-muted">
+                Recibe actualizaciones sobre cómo tu contribución está generando cambios.
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+
+      {/* Call to Action */}
+      <section className="text-center">
+        <Container>
+          <Card className="border-0 bg-primary text-white">
+            <Card.Body className="py-5">
+              <h2 className="fw-bold mb-3">¿Listo para hacer la diferencia?</h2>
+              <p className="lead mb-4">
+                Miles de personas ya están contribuyendo al cambio. Únete a esta comunidad.
+              </p>
+              <div className="d-flex justify-content-center gap-3">
+                <Button 
+                  as={Link}
+                  to="/organizations"
+                  variant="light"
+                  size="lg"
+                >
+                  <i className="bi bi-building me-2"></i>
+                  Explorar organizaciones
+                </Button>
+                <Button 
+                  variant="outline-light"
+                  size="lg"
+                >
+                  <i className="bi bi-plus-circle me-2"></i>
+                  Registrar mi organización
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Container>
+      </section>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 # mgen-frontend
 
-Sistema de gestión de donaciones -
+Sistema de gestión de donaciones - Frontend React con arquitectura hexagonal.
 
 ## 🚀 Inicio Rápido
 

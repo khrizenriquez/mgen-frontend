@@ -4,19 +4,13 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-// Get API base URL from environment (support both VITE_API_URL and VITE_API_BASE_URL)
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  'http://localhost:8000'
-
-// Configurable timeout
-const API_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000
+// Get API base URL from environment
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: API_TIMEOUT,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },

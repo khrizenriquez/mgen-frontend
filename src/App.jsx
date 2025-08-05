@@ -4,20 +4,20 @@
 import { Routes, Route } from 'react-router-dom'
 import { Suspense } from 'react'
 
-import Layout from '@components/layout/Layout'
-import LoadingSpinner from '@components/ui/LoadingSpinner'
-import ErrorBoundary from '@components/ui/ErrorBoundary'
+import Layout from './components/layout/Layout'
+import LoadingSpinner from './components/ui/LoadingSpinner'
+import ErrorBoundary from './components/ui/ErrorBoundary'
 
-// Lazy load pages for better performance
-import HomePage from '@pages/HomePage'
-import DonationsPage from '@pages/DonationsPage'
-import CreateDonationPage from '@pages/CreateDonationPage'
-import DonationDetailPage from '@pages/DonationDetailPage'
-import StatsPage from '@pages/StatsPage'
-import OrganizationsPage from '@pages/OrganizationsPage'
-import OrganizationDetailPage from '@pages/OrganizationDetailPage'
-import DonationFlowPage from '@pages/DonationFlowPage'
-import NotFoundPage from '@pages/NotFoundPage'
+// Direct imports for better debugging
+import HomePage from './pages/HomePage'
+import DonationsPage from './pages/DonationsPage'
+import CreateDonationPage from './pages/CreateDonationPage'
+import DonationDetailPage from './pages/DonationDetailPage'
+import StatsPage from './pages/StatsPage'
+import OrganizationsPage from './pages/OrganizationsPage'
+import OrganizationDetailPage from './pages/OrganizationDetailPage'
+import DonationFlowPage from './pages/DonationFlowPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (

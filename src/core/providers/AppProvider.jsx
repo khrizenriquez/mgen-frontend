@@ -2,7 +2,7 @@
  * App Provider - Global application context and state
  */
 import { createContext, useContext, useReducer, useEffect } from 'react'
-import { DonationService } from '@core/services/DonationService'
+import { DonationService } from '../services/DonationService'
 
 // Initial state
 const initialState = {

@@ -12,6 +12,7 @@ import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { AppProvider } from '@core/providers/AppProvider'
 import '@styles/index.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 // Create a client for React Query
 const queryClient = new QueryClient({

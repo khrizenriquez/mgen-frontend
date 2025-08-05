@@ -3,7 +3,6 @@
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Search, Filter } from 'lucide-react'
 import { useApp } from '@core/providers/AppProvider'
 import { DonationStatus, DonationType } from '@core/entities/Donation'
 import LoadingSpinner from '@components/ui/LoadingSpinner'
@@ -30,13 +29,13 @@ export default function DonationsPage() {
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case DonationStatus.COMPLETED:
-        return 'badge-success'
+        return 'badge bg-success-subtle text-success'
       case DonationStatus.PENDING:
-        return 'badge-warning'
+        return 'badge bg-warning-subtle text-warning'
       case DonationStatus.FAILED:
-        return 'badge-danger'
+        return 'badge bg-danger-subtle text-danger'
       default:
-        return 'badge-gray'
+        return 'badge bg-secondary-subtle text-secondary'
     }
   }
 
@@ -45,34 +44,34 @@ export default function DonationsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Donations</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="h2 fw-bold text-dark mb-1">Donations</h1>
+          <p className="text-muted">
             Manage and track all donations
           </p>
         </div>
-        <Link to="/donations/new" className="btn-primary">
-          <Plus className="h-4 w-4 mr-2" />
+        <Link to="/donations/new" className="btn btn-primary d-flex align-items-center">
+          <i className="bi bi-plus-circle me-2"></i>
           New Donation
         </Link>
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card mb-4">
         <div className="card-body">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="row g-3">
+            <div className="col-md-4">
+              <label className="form-label">Search</label>
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="bi bi-search"></i>
+                </span>
                 <input
                   type="text"
-                  className="input pl-10"
+                  className="form-control"
                   placeholder="Search by name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -80,12 +79,10 @@ export default function DonationsPage() {
               </div>
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
+            <div className="col-md-4">
+              <label className="form-label">Status</label>
               <select
-                className="input"
+                className="form-select"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -98,12 +95,10 @@ export default function DonationsPage() {
               </select>
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type
-              </label>
+            <div className="col-md-4">
+              <label className="form-label">Type</label>
               <select
-                className="input"
+                className="form-select"
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
               >
@@ -121,61 +116,49 @@ export default function DonationsPage() {
 
       {/* Donations List */}
       <div className="card">
-        <div className="overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="table-responsive">
+          <table className="table table-hover mb-0">
+            <thead className="table-light">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Donor
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th>Donor</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th className="text-end">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {filteredDonations.map((donation) => (
-                <tr key={donation.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr key={donation.id}>
+                  <td>
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="fw-medium text-dark">
                         {donation.donorName}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="small text-muted">
                         {donation.donorEmail}
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="fw-medium">
                     {donation.formattedAmount}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td>
                     {donation.typeDisplay}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`badge ${getStatusBadgeClass(donation.status)}`}>
+                  <td>
+                    <span className={getStatusBadgeClass(donation.status)}>
                       {donation.statusDisplay}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="text-muted">
                     {donation.createdAt.toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="text-end">
                     <Link
                       to={`/donations/${donation.id}`}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="btn btn-sm btn-outline-primary"
                     >
                       View
                     </Link>
@@ -186,8 +169,9 @@ export default function DonationsPage() {
           </table>
           
           {filteredDonations.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No donations found matching your criteria.</p>
+            <div className="text-center py-5">
+              <i className="bi bi-inbox text-muted" style={{fontSize: '3rem'}}></i>
+              <p className="text-muted mt-3">No donations found matching your criteria.</p>
             </div>
           )}
         </div>

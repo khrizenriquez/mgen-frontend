@@ -1,31 +1,27 @@
 /**
  * Loading Spinner Component
  */
-import { Loader2 } from 'lucide-react'
-import { cn } from '@utils/cn'
-
 export default function LoadingSpinner({ 
-  className, 
+  className = '', 
   size = 'default',
   text = 'Loading...' 
 }) {
   const sizeClasses = {
-    small: 'h-4 w-4',
-    default: 'h-6 w-6',
-    large: 'h-8 w-8',
+    small: 'spinner-border-sm',
+    default: '',
+    large: 'spinner-border-lg',
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <Loader2 
-        className={cn(
-          'animate-spin text-blue-600',
-          sizeClasses[size],
-          className
-        )} 
-      />
+    <div className="d-flex flex-column align-items-center justify-content-center p-4">
+      <div 
+        className={`spinner-border text-primary ${sizeClasses[size]} ${className}`}
+        role="status"
+      >
+        <span className="visually-hidden">Loading...</span>
+      </div>
       {text && (
-        <p className="mt-2 text-sm text-gray-600">{text}</p>
+        <p className="mt-2 text-muted small">{text}</p>
       )}
     </div>
   )

@@ -3,7 +3,6 @@
  * Catches React errors and displays fallback UI
  */
 import { Component } from 'react'
-import { AlertTriangle, RotateCcw } from 'lucide-react'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -32,46 +31,52 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-              <div className="text-center">
-                <AlertTriangle className="mx-auto h-12 w-12 text-red-500" />
-                <h2 className="mt-4 text-lg font-medium text-gray-900">
-                  Something went wrong
-                </h2>
-                <p className="mt-2 text-sm text-gray-600">
-                  We're sorry, but something unexpected happened. Please try refreshing the page.
-                </p>
-                
-                {process.env.NODE_ENV === 'development' && (
-                  <details className="mt-4 text-left">
-                    <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-                      Error Details (Development)
-                    </summary>
-                    <div className="mt-2 p-3 bg-gray-100 rounded text-xs font-mono text-gray-800 overflow-auto">
-                      <div className="font-bold">Error:</div>
-                      <pre>{this.state.error && this.state.error.toString()}</pre>
-                      <div className="font-bold mt-2">Stack Trace:</div>
-                      <pre>{this.state.errorInfo.componentStack}</pre>
+        <div className="min-vh-100 bg-light d-flex flex-column justify-content-center py-5">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-md-6">
+                <div className="card shadow-sm">
+                  <div className="card-body p-4">
+                    <div className="text-center">
+                      <i className="bi bi-exclamation-triangle text-danger" style={{fontSize: '3rem'}}></i>
+                      <h2 className="mt-3 h4 fw-medium text-dark">
+                        Something went wrong
+                      </h2>
+                      <p className="text-muted small">
+                        We're sorry, but something unexpected happened. Please try refreshing the page.
+                      </p>
+                      
+                      {process.env.NODE_ENV === 'development' && (
+                        <details className="mt-4 text-start">
+                          <summary className="cursor-pointer small text-muted">
+                            Error Details (Development)
+                          </summary>
+                          <div className="mt-2 p-3 bg-light rounded small font-monospace text-dark">
+                            <div className="fw-bold">Error:</div>
+                            <pre className="small">{this.state.error && this.state.error.toString()}</pre>
+                            <div className="fw-bold mt-2">Stack Trace:</div>
+                            <pre className="small">{this.state.errorInfo.componentStack}</pre>
+                          </div>
+                        </details>
+                      )}
+                      
+                      <div className="mt-4 d-flex flex-column flex-sm-row gap-2">
+                        <button
+                          onClick={this.handleReset}
+                          className="btn btn-primary d-flex align-items-center justify-content-center"
+                        >
+                          <i className="bi bi-arrow-clockwise me-2"></i>
+                          Try Again
+                        </button>
+                        <button
+                          onClick={() => window.location.reload()}
+                          className="btn btn-outline-secondary"
+                        >
+                          Refresh Page
+                        </button>
+                      </div>
                     </div>
-                  </details>
-                )}
-                
-                <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={this.handleReset}
-                    className="btn-primary flex-1 flex items-center justify-center"
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Try Again
-                  </button>
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="btn-outline flex-1"
-                  >
-                    Refresh Page
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>

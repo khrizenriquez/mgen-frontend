@@ -2,41 +2,40 @@
  * 404 Not Found Page Component
  */
 import { Link } from 'react-router-dom'
-import { Home, ArrowLeft } from 'lucide-react'
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="min-vh-60 d-flex align-items-center justify-content-center">
       <div className="text-center">
-        <div className="mb-8">
-          <h1 className="text-9xl font-bold text-gray-200">404</h1>
-          <h2 className="text-2xl font-bold text-gray-900 mt-4">Page Not Found</h2>
-          <p className="text-gray-600 mt-2 max-w-md mx-auto">
+        <div className="mb-5">
+          <h1 className="display-1 fw-bold text-black-50">404</h1>
+          <h2 className="h3 fw-bold text-dark mt-4">Page Not Found</h2>
+          <p className="text-muted mt-3 mx-auto" style={{maxWidth: '400px'}}>
             Sorry, we couldn't find the page you're looking for. 
             The page might have been moved, deleted, or doesn't exist.
           </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center">
           <Link
             to="/"
-            className="btn-primary flex items-center justify-center"
+            className="btn btn-primary d-flex align-items-center justify-content-center"
           >
-            <Home className="h-4 w-4 mr-2" />
+            <i className="bi bi-house me-2"></i>
             Go Home
           </Link>
           
           <button
             onClick={() => window.history.back()}
-            className="btn-outline flex items-center justify-center"
+            className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <i className="bi bi-arrow-left me-2"></i>
             Go Back
           </button>
         </div>
         
-        <div className="mt-12">
-          <p className="text-sm text-gray-500">
+        <div className="mt-5">
+          <p className="small text-muted">
             If you think this is an error, please contact support.
           </p>
         </div>

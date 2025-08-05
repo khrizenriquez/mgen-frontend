@@ -3,7 +3,6 @@
  */
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check, X, Clock } from 'lucide-react'
 import { useApp } from '@core/providers/AppProvider'
 import { DonationStatus } from '@core/entities/Donation'
 import LoadingSpinner from '@components/ui/LoadingSpinner'
@@ -77,187 +76,207 @@ export default function DonationDetailPage() {
   const getStatusIcon = (status) => {
     switch (status) {
       case DonationStatus.COMPLETED:
-        return <Check className="h-5 w-5 text-green-600" />
+        return <i className="bi bi-check-circle text-success" style={{fontSize: '1.25rem'}}></i>
       case DonationStatus.FAILED:
       case DonationStatus.CANCELLED:
-        return <X className="h-5 w-5 text-red-600" />
+        return <i className="bi bi-x-circle text-danger" style={{fontSize: '1.25rem'}}></i>
       default:
-        return <Clock className="h-5 w-5 text-yellow-600" />
+        return <i className="bi bi-clock text-warning" style={{fontSize: '1.25rem'}}></i>
     }
   }
 
   const getStatusColor = (status) => {
     switch (status) {
       case DonationStatus.COMPLETED:
-        return 'text-green-600 bg-green-100'
+        return 'text-success bg-success-subtle'
       case DonationStatus.FAILED:
       case DonationStatus.CANCELLED:
-        return 'text-red-600 bg-red-100'
+        return 'text-danger bg-danger-subtle'
       default:
-        return 'text-yellow-600 bg-yellow-100'
+        return 'text-warning bg-warning-subtle'
     }
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <button
-          onClick={() => navigate('/donations')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Donations
-        </button>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Donation #{donation.id}
-            </h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Created on {donation.createdAt.toLocaleDateString()}
-            </p>
-          </div>
-          <div className={`flex items-center px-3 py-1 rounded-full ${getStatusColor(donation.status)}`}>
-            {getStatusIcon(donation.status)}
-            <span className="ml-2 text-sm font-medium">{donation.statusDisplay}</span>
+    <div className="row justify-content-center">
+      <div className="col-xl-10">
+        {/* Header */}
+        <div className="mb-4">
+          <button
+            onClick={() => navigate('/donations')}
+            className="btn btn-link text-decoration-none p-0 mb-3 d-flex align-items-center"
+          >
+            <i className="bi bi-arrow-left me-2"></i>
+            Back to Donations
+          </button>
+          <div className="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+              <h1 className="h2 fw-bold text-dark">
+                Donation #{donation.id}
+              </h1>
+              <p className="text-muted">
+                Created on {donation.createdAt.toLocaleDateString()}
+              </p>
+            </div>
+            <div className={`d-flex align-items-center px-3 py-2 rounded-pill ${getStatusColor(donation.status)}`}>
+              {getStatusIcon(donation.status)}
+              <span className="ms-2 fw-medium">{donation.statusDisplay}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Information */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Donor Information */}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-gray-900">Donor Information</h3>
-            </div>
-            <div className="card-body">
-              <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Full Name</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{donation.donorName}</dd>
+        <div className="row g-4">
+          {/* Main Information */}
+          <div className="col-lg-8">
+            <div className="mb-4">
+              {/* Donor Information */}
+              <div className="card mb-4">
+                <div className="card-header">
+                  <h3 className="card-title h5 mb-0">Donor Information</h3>
                 </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Email</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{donation.donorEmail}</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-
-          {/* Donation Details */}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-gray-900">Donation Details</h3>
-            </div>
-            <div className="card-body">
-              <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Amount</dt>
-                  <dd className="mt-1 text-2xl font-bold text-gray-900">
-                    {donation.formattedAmount}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Type</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{donation.typeDisplay}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Created</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {donation.createdAt.toLocaleString()}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {donation.updatedAt.toLocaleString()}
-                  </dd>
-                </div>
-                {donation.completedAt && (
-                  <div className="sm:col-span-2">
-                    <dt className="text-sm font-medium text-gray-500">Completed</dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {donation.completedAt.toLocaleString()}
-                    </dd>
+                <div className="card-body">
+                  <div className="row g-3">
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Full Name</dt>
+                      <dd className="fw-medium">{donation.donorName}</dd>
+                    </div>
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Email</dt>
+                      <dd className="fw-medium">{donation.donorEmail}</dd>
+                    </div>
                   </div>
-                )}
-              </dl>
-              
-              {donation.description && (
-                <div className="mt-6">
-                  <dt className="text-sm font-medium text-gray-500">Description</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{donation.description}</dd>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+              </div>
 
-        {/* Actions Sidebar */}
-        <div className="space-y-6">
-          {/* Actions */}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-gray-900">Actions</h3>
-            </div>
-            <div className="card-body space-y-3">
-              {donation.isPending && (
-                <>
-                  <button
-                    onClick={handleProcess}
-                    disabled={processing}
-                    className="btn-success w-full"
-                  >
-                    {processing ? 'Processing...' : 'Process Donation'}
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    disabled={processing}
-                    className="btn-danger w-full"
-                  >
-                    {processing ? 'Cancelling...' : 'Cancel Donation'}
-                  </button>
-                </>
-              )}
-              
-              {donation.isCompleted && (
-                <div className="text-center py-4">
-                  <Check className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">This donation has been completed</p>
+              {/* Donation Details */}
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title h5 mb-0">Donation Details</h3>
                 </div>
-              )}
-              
-              {(donation.isFailed || donation.isCancelled) && (
-                <div className="text-center py-4">
-                  <X className="h-12 w-12 text-red-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">
-                    This donation has been {donation.statusDisplay.toLowerCase()}
-                  </p>
+                <div className="card-body">
+                  <div className="row g-3">
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Amount</dt>
+                      <dd className="h3 fw-bold text-primary">
+                        {donation.formattedAmount}
+                      </dd>
+                    </div>
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Type</dt>
+                      <dd className="fw-medium">{donation.typeDisplay}</dd>
+                    </div>
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Created</dt>
+                      <dd className="small">
+                        {donation.createdAt.toLocaleString()}
+                      </dd>
+                    </div>
+                    <div className="col-sm-6">
+                      <dt className="small text-muted">Last Updated</dt>
+                      <dd className="small">
+                        {donation.updatedAt.toLocaleString()}
+                      </dd>
+                    </div>
+                    {donation.completedAt && (
+                      <div className="col-12">
+                        <dt className="small text-muted">Completed</dt>
+                        <dd className="small">
+                          {donation.completedAt.toLocaleString()}
+                        </dd>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {donation.description && (
+                    <div className="mt-3">
+                      <dt className="small text-muted">Description</dt>
+                      <dd className="mt-1">{donation.description}</dd>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-gray-900">Quick Info</h3>
-            </div>
-            <div className="card-body space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">ID:</span>
-                <span className="font-medium">#{donation.id}</span>
+          {/* Actions Sidebar */}
+          <div className="col-lg-4">
+            <div className="mb-4">
+              {/* Actions */}
+              <div className="card mb-4">
+                <div className="card-header">
+                  <h3 className="card-title h5 mb-0">Actions</h3>
+                </div>
+                <div className="card-body d-grid gap-2">
+                  {donation.isPending && (
+                    <>
+                      <button
+                        onClick={handleProcess}
+                        disabled={processing}
+                        className="btn btn-success"
+                      >
+                        {processing ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Processing...
+                          </>
+                        ) : (
+                          'Process Donation'
+                        )}
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        disabled={processing}
+                        className="btn btn-danger"
+                      >
+                        {processing ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Cancelling...
+                          </>
+                        ) : (
+                          'Cancel Donation'
+                        )}
+                      </button>
+                    </>
+                  )}
+                  
+                  {donation.isCompleted && (
+                    <div className="text-center py-4">
+                      <i className="bi bi-check-circle-fill text-success" style={{fontSize: '3rem'}}></i>
+                      <p className="small text-muted mt-2">This donation has been completed</p>
+                    </div>
+                  )}
+                  
+                  {(donation.isFailed || donation.isCancelled) && (
+                    <div className="text-center py-4">
+                      <i className="bi bi-x-circle-fill text-danger" style={{fontSize: '3rem'}}></i>
+                      <p className="small text-muted mt-2">
+                        This donation has been {donation.statusDisplay.toLowerCase()}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Status:</span>
-                <span className="font-medium">{donation.statusDisplay}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Type:</span>
-                <span className="font-medium">{donation.typeDisplay}</span>
+
+              {/* Quick Stats */}
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title h5 mb-0">Quick Info</h3>
+                </div>
+                <div className="card-body">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-muted small">ID:</span>
+                    <span className="fw-medium">#{donation.id}</span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-muted small">Status:</span>
+                    <span className="fw-medium">{donation.statusDisplay}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span className="text-muted small">Type:</span>
+                    <span className="fw-medium">{donation.typeDisplay}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

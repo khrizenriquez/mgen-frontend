@@ -2,7 +2,6 @@
  * Statistics Page Component
  */
 import { useEffect } from 'react'
-import { TrendingUp, DollarSign, Users, Clock } from 'lucide-react'
 import { useApp } from '@core/providers/AppProvider'
 import LoadingSpinner from '@components/ui/LoadingSpinner'
 
@@ -23,35 +22,35 @@ export default function StatsPage() {
       name: 'Total Completed Amount',
       value: statistics?.total_amount_completed ? 
         `$${statistics.total_amount_completed.toLocaleString()}` : '$0',
-      icon: DollarSign,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      icon: 'bi-currency-dollar',
+      color: 'text-success',
+      bgColor: 'bg-success-subtle',
       description: 'Total amount from completed donations'
     },
     {
       name: 'Pending Amount',
       value: statistics?.total_amount_pending ? 
         `$${statistics.total_amount_pending.toLocaleString()}` : '$0',
-      icon: Clock,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
+      icon: 'bi-clock',
+      color: 'text-warning',
+      bgColor: 'bg-warning-subtle',
       description: 'Amount waiting to be processed'
     },
     {
       name: 'Completed Donations',
       value: statistics?.count_completed || 0,
-      icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      icon: 'bi-graph-up',
+      color: 'text-primary',
+      bgColor: 'bg-primary-subtle',
       description: 'Number of successful donations'
     },
     {
       name: 'Success Rate',
       value: statistics?.success_rate ? 
         `${statistics.success_rate.toFixed(1)}%` : '0%',
-      icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      icon: 'bi-people',
+      color: 'text-info',
+      bgColor: 'bg-info-subtle',
       description: 'Percentage of successful donations'
     },
   ]
@@ -62,115 +61,119 @@ export default function StatsPage() {
     (statistics.total_amount_completed / statistics.count_completed).toFixed(2) : 0
 
   return (
-    <div className="space-y-8">
+    <div className="fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Statistics & Analytics</h1>
-        <p className="mt-1 text-sm text-gray-600">
+      <div className="mb-5">
+        <h1 className="h2 fw-bold text-dark">Statistics & Analytics</h1>
+        <p className="text-muted">
           Comprehensive overview of donation performance
         </p>
       </div>
 
       {/* Main Statistics Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="row g-4 mb-5">
         {stats.map((stat) => (
-          <div key={stat.name} className="card">
-            <div className="card-body">
-              <div className="flex items-center">
-                <div className={`rounded-lg p-3 ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+          <div key={stat.name} className="col-md-6 col-lg-3">
+            <div className="card stats-card h-100">
+              <div className="card-body">
+                <div className="d-flex align-items-center">
+                  <div className={`stats-icon ${stat.bgColor} me-3`}>
+                    <i className={`${stat.icon} ${stat.color}`} style={{fontSize: '1.5rem'}}></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <p className="card-text text-muted small mb-1">{stat.name}</p>
+                    <p className="card-title h4 mb-0">{stat.value}</p>
+                  </div>
                 </div>
-                <div className="ml-4 flex-1">
-                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-                </div>
+                <p className="mt-3 small text-muted">{stat.description}</p>
               </div>
-              <p className="mt-3 text-xs text-gray-500">{stat.description}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Additional Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="row g-4 mb-5">
         {/* Detailed Stats */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-medium text-gray-900">Detailed Metrics</h3>
-          </div>
-          <div className="card-body">
-            <dl className="space-y-4">
-              <div className="flex justify-between">
-                <dt className="text-sm text-gray-600">Total Donations</dt>
-                <dd className="text-sm font-medium text-gray-900">
+        <div className="col-lg-6">
+          <div className="card h-100">
+            <div className="card-header">
+              <h3 className="card-title h5 mb-0">Detailed Metrics</h3>
+            </div>
+            <div className="card-body">
+              <div className="d-flex justify-content-between mb-3">
+                <dt className="text-muted small">Total Donations</dt>
+                <dd className="fw-medium">
                   {(statistics?.count_completed || 0) + (statistics?.count_pending || 0) + (statistics?.count_failed || 0)}
                 </dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-sm text-gray-600">Completed</dt>
-                <dd className="text-sm font-medium text-green-600">
+              <div className="d-flex justify-content-between mb-3">
+                <dt className="text-muted small">Completed</dt>
+                <dd className="fw-medium text-success">
                   {statistics?.count_completed || 0}
                 </dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-sm text-gray-600">Pending</dt>
-                <dd className="text-sm font-medium text-yellow-600">
+              <div className="d-flex justify-content-between mb-3">
+                <dt className="text-muted small">Pending</dt>
+                <dd className="fw-medium text-warning">
                   {statistics?.count_pending || 0}
                 </dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-sm text-gray-600">Failed</dt>
-                <dd className="text-sm font-medium text-red-600">
+              <div className="d-flex justify-content-between mb-3">
+                <dt className="text-muted small">Failed</dt>
+                <dd className="fw-medium text-danger">
                   {statistics?.count_failed || 0}
                 </dd>
               </div>
-              <div className="flex justify-between border-t pt-4">
-                <dt className="text-sm text-gray-600">Average Donation</dt>
-                <dd className="text-sm font-medium text-gray-900">
+              <div className="d-flex justify-content-between border-top pt-3">
+                <dt className="text-muted small">Average Donation</dt>
+                <dd className="fw-medium">
                   ${averageDonation}
                 </dd>
               </div>
-            </dl>
+            </div>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-medium text-gray-900">Recent Donations</h3>
-          </div>
-          <div className="card-body">
-            {recentDonations.length > 0 ? (
-              <div className="space-y-4">
-                {recentDonations.map((donation) => (
-                  <div key={donation.id} className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {donation.donorName}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {donation.createdAt.toLocaleDateString()}
-                      </p>
+        <div className="col-lg-6">
+          <div className="card h-100">
+            <div className="card-header">
+              <h3 className="card-title h5 mb-0">Recent Donations</h3>
+            </div>
+            <div className="card-body">
+              {recentDonations.length > 0 ? (
+                <div className="d-grid gap-3">
+                  {recentDonations.map((donation) => (
+                    <div key={donation.id} className="d-flex justify-content-between align-items-center">
+                      <div className="flex-grow-1">
+                        <p className="fw-medium mb-1">
+                          {donation.donorName}
+                        </p>
+                        <p className="small text-muted">
+                          {donation.createdAt.toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="text-end">
+                        <p className="fw-medium mb-1">
+                          {donation.formattedAmount}
+                        </p>
+                        <p className={`small ${
+                          donation.isCompleted ? 'text-success' :
+                          donation.isPending ? 'text-warning' : 'text-danger'
+                        }`}>
+                          {donation.statusDisplay}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {donation.formattedAmount}
-                      </p>
-                      <p className={`text-xs ${
-                        donation.isCompleted ? 'text-green-600' :
-                        donation.isPending ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {donation.statusDisplay}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-4">
-                No recent donations
-              </p>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted text-center py-4">
+                  No recent donations
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -178,36 +181,36 @@ export default function StatsPage() {
       {/* Performance Summary */}
       <div className="card">
         <div className="card-header">
-          <h3 className="text-lg font-medium text-gray-900">Performance Summary</h3>
+          <h3 className="card-title h5 mb-0">Performance Summary</h3>
         </div>
         <div className="card-body">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+          <div className="row g-4 text-center">
+            <div className="col-md-4">
+              <div className="h2 fw-bold text-success">
                 {statistics?.success_rate ? statistics.success_rate.toFixed(1) : 0}%
               </div>
-              <div className="text-sm text-gray-600">Success Rate</div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="text-muted">Success Rate</div>
+              <div className="mt-2 small text-muted">
                 Based on completed vs failed donations
               </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="col-md-4">
+              <div className="h2 fw-bold text-primary">
                 ${averageDonation}
               </div>
-              <div className="text-sm text-gray-600">Average Donation</div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="text-muted">Average Donation</div>
+              <div className="mt-2 small text-muted">
                 Per completed donation
               </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="col-md-4">
+              <div className="h2 fw-bold text-info">
                 {statistics?.count_pending || 0}
               </div>
-              <div className="text-sm text-gray-600">Pending Processing</div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="text-muted">Pending Processing</div>
+              <div className="mt-2 small text-muted">
                 Awaiting manual processing
               </div>
             </div>

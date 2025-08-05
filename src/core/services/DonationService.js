@@ -2,8 +2,8 @@
  * Donation Service - Business logic for donations
  * Implements use cases and orchestrates domain operations
  */
-import { DonationRepository } from '@core/repositories/DonationRepository'
-import { Donation } from '@core/entities/Donation'
+import { DonationRepository } from '../repositories/DonationRepository'
+import { Donation } from '../entities/Donation'
 import { apiService } from './api'
 
 export class DonationService extends DonationRepository {

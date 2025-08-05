@@ -97,17 +97,33 @@ export function AppProvider({ children }) {
     loadDonations: async (filters = {}) => {
       try {
         dispatch({ type: ActionTypes.SET_LOADING, payload: true })
-        const result = await donationService.getAll({ ...state.filters, ...filters })
-        dispatch({ type: ActionTypes.SET_DONATIONS, payload: result.donations })
+        // Temporarily disabled until backend endpoints are ready
+        // const result = await donationService.getAll({ ...state.filters, ...filters })
+        // dispatch({ type: ActionTypes.SET_DONATIONS, payload: result.donations })
+        
+        // Mock donations for now
+        dispatch({ type: ActionTypes.SET_DONATIONS, payload: [] })
+        dispatch({ type: ActionTypes.SET_LOADING, payload: false })
       } catch (error) {
         dispatch({ type: ActionTypes.SET_ERROR, payload: error.message })
+        dispatch({ type: ActionTypes.SET_LOADING, payload: false })
       }
     },
 
     loadStatistics: async () => {
       try {
-        const stats = await donationService.getStatistics()
-        dispatch({ type: ActionTypes.SET_STATISTICS, payload: stats })
+        // Temporarily disabled until backend endpoints are ready
+        // const stats = await donationService.getStatistics()
+        // dispatch({ type: ActionTypes.SET_STATISTICS, payload: stats })
+        
+        // Mock statistics for now
+        const mockStats = {
+          total_amount_completed: 45250,
+          total_amount_pending: 12500,
+          count_completed: 342,
+          success_rate: 89.5
+        }
+        dispatch({ type: ActionTypes.SET_STATISTICS, payload: mockStats })
       } catch (error) {
         console.error('Error loading statistics:', error)
       }
@@ -154,8 +170,9 @@ export function AppProvider({ children }) {
 
   // Load initial data
   useEffect(() => {
-    actions.loadDonations()
+    // Load mock data for now
     actions.loadStatistics()
+    actions.loadDonations()
   }, [])
 
   const value = {

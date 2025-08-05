@@ -227,3 +227,25 @@ firebase-debug.log
 # GraphQL
 schema.json
 introspection.json
+
+# GitHub Actions
+# Note: .github/workflows/ should be committed (contains CI/CD config)
+# Only ignore temporary/cache files from actions
+.github/artifacts/
+.github/cache/
+.github/temp/
+
+# Railway deployment
+railway.json
+.railway/
+railway.toml
+.railway.env
+
+# Deployment artifacts
+deployment/
+deploy.log
+*.deploy
+
+# Build and deployment outputs
+build-logs/
+deploy-logs/

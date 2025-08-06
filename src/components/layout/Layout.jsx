@@ -7,9 +7,8 @@ import { useState } from 'react'
 
 const navigation = [
   { name: 'Inicio', href: '/', icon: 'bi-house' },
-  { name: 'Organizaciones', href: '/organizations', icon: 'bi-building' },
   { name: 'Donaciones', href: '/donations', icon: 'bi-list-ul' },
-  { name: 'Nueva Donación', href: '/donations/new', icon: 'bi-plus-circle' },
+  { name: 'Donar Ahora', href: '/donate', icon: 'bi-heart-fill' },
   { name: 'Estadísticas', href: '/stats', icon: 'bi-graph-up' },
 ]
 
@@ -25,7 +24,7 @@ export default function Layout({ children }) {
           {/* Logo and brand */}
           <Link to="/" className="navbar-brand d-flex align-items-center">
             <i className="bi bi-heart-fill text-danger me-2" style={{fontSize: '1.5rem'}}></i>
-            <span className="fw-semibold">Yo Me Uno</span>
+            <span className="fw-semibold">Plataforma de donaciones</span>
           </Link>
 
           {/* Mobile menu button */}
@@ -77,7 +76,7 @@ export default function Layout({ children }) {
         <div className="container">
           <div className="d-flex justify-content-between align-items-center flex-wrap">
             <div className="text-muted small">
-              © 2024 Yo Me Uno. Plataforma de donaciones para Guatemala.
+              © 2024 Plataforma de donaciones.
             </div>
             <div className="text-muted small">
               Version {import.meta.env.VITE_APP_VERSION || '1.0.0'}

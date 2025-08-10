@@ -1,5 +1,4 @@
 [build]
-  base = "mgen-frontend"
   command = "pnpm install --frozen-lockfile && pnpm build"
   publish = "dist"
 

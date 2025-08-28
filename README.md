@@ -12,7 +12,7 @@ Sistema de gestión de donaciones -
 ### Levantar con Docker (Producción)
 
 ```bash
-# Clonar el repositorio (si no lo has hecho)
+# Clonar el repositorio
 git clone <repository-url>
 cd mgen-frontend
 
@@ -20,7 +20,7 @@ cd mgen-frontend
 docker build -t donations-frontend .
 docker run -d -p 80:80 --name donations-app donations-frontend
 
-# O usando docker-compose (si tienes uno configurado)
+# O usando docker-compose
 docker-compose up -d
 
 # Detener el contenedor

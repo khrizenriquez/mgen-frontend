@@ -1,0 +1,160 @@
+---
+alwaysApply: true
+description: Bootstrap CSS styling conventions and guidelines for the donations frontend
+---
+
+# Bootstrap CSS Styling Standards
+
+## Bootstrap Usage Policy
+- **ONLY use Bootstrap CSS** - NO Tailwind CSS allowed
+- Use Bootstrap 5.3.2+ with react-bootstrap components
+- Remove any Tailwind CSS references or configuration
+- Leverage Bootstrap utilities for spacing, typography, and layout
+
+## Component Usage
+Use react-bootstrap components for consistent styling:
+
+```jsx
+import { 
+  Container, Row, Col, Card, Button, Form, 
+  Alert, Badge, Spinner, Modal, Navbar 
+} from 'react-bootstrap'
+
+// Good: Using Bootstrap components
+const DonationForm = () => (
+  <Container>
+    <Row className="justify-content-center">
+      <Col md={8}>
+        <Card>
+          <Card.Header>
+            <h4>New Donation</h4>
+          </Card.Header>
+          <Card.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Amount</Form.Label>
+                <Form.Control type="number" placeholder="Enter amount" />
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Submit Donation
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  </Container>
+)
+```
+
+## Bootstrap Utilities
+Use Bootstrap utility classes for common styling:
+
+```jsx
+// Spacing utilities
+<div className="mb-3 p-4 mx-auto">
+
+// Display utilities  
+<div className="d-flex justify-content-between align-items-center">
+
+// Text utilities
+<p className="text-center text-muted fs-5">
+
+// Background and border utilities
+<div className="bg-light border rounded p-3">
+```
+
+## Color Schemes
+Use Bootstrap's semantic color system:
+- `primary` - Main brand color for primary actions
+- `secondary` - Secondary actions and content
+- `success` - Success states, completed donations
+- `danger` - Errors, failed donations, delete actions
+- `warning` - Warnings, pending states
+- `info` - Information, neutral states
+- `light` - Light backgrounds
+- `dark` - Dark text and backgrounds
+
+## Responsive Design
+Use Bootstrap's grid system and responsive utilities:
+
+```jsx
+// Responsive grid
+<Row>
+  <Col xs={12} md={6} lg={4}>
+    <DonationCard />
+  </Col>
+</Row>
+
+// Responsive utilities
+<div className="d-none d-md-block">Desktop only content</div>
+<div className="d-block d-md-none">Mobile only content</div>
+```
+
+## Custom CSS Guidelines
+When custom CSS is needed:
+- Place in `src/styles/` directory
+- Use CSS modules or styled-components
+- Follow Bootstrap naming conventions
+- Extend Bootstrap variables, don't override
+
+```css
+/* Good: Extending Bootstrap */
+.donation-card {
+  @extend .card;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Avoid: Conflicting with Bootstrap */
+.btn {
+  /* Don't override Bootstrap button styles */
+}
+```
+
+## Bootstrap Icons
+Use Bootstrap Icons for consistent iconography:
+
+```jsx
+import 'bootstrap-icons/font/bootstrap-icons.css'
+
+// Use with className
+<i className="bi bi-heart-fill text-danger"></i>
+<i className="bi bi-credit-card me-2"></i>
+```
+
+## Form Styling
+Use Bootstrap form components for consistent form styling:
+
+```jsx
+<Form.Group className="mb-3">
+  <Form.Label>Donor Email</Form.Label>
+  <Form.Control 
+    type="email" 
+    isInvalid={!!errors.email}
+    placeholder="Enter email"
+  />
+  <Form.Control.Feedback type="invalid">
+    {errors.email}
+  </Form.Control.Feedback>
+</Form.Group>
+```
+
+## Layout Patterns
+Use Bootstrap layout components:
+- `Container` for main content areas
+- `Row` and `Col` for grid layouts
+- `Card` for content grouping
+- `Navbar` for navigation
+- `Modal` for overlays
+- `Offcanvas` for side panels
+
+## NO Tailwind CSS
+- Remove any Tailwind CSS imports or configuration
+- Delete tailwind.config.js if present
+- Replace Tailwind classes with Bootstrap equivalents:
+  - `flex` → `d-flex`
+  - `justify-center` → `justify-content-center`
+  - `items-center` → `align-items-center`
+  - `bg-blue-500` → `bg-primary`
+  - `text-lg` → `fs-5`
+  - `p-4` → `p-4` (same in Bootstrap)

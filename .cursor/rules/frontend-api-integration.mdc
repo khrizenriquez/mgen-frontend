@@ -1,0 +1,264 @@
+---
+alwaysApply: true
+description: API integration patterns for connecting frontend to the donations backend
+---
+
+# API Integration Patterns
+
+## Base API Configuration
+Configure axios client for backend communication:
+
+```javascript
+// src/core/services/api.js
+import axios from 'axios'
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Request interceptor for correlation IDs
+apiClient.interceptors.request.use((config) => {
+  // Add correlation ID if not present
+  if (!config.headers['x-request-id']) {
+    config.headers['x-request-id'] = crypto.randomUUID()
+  }
+  return config
+})
+
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log error with correlation ID
+    const requestId = error.config?.headers['x-request-id']
+    console.error('API Error:', {
+      requestId,
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      message: error.message,
+    })
+    return Promise.reject(error)
+  }
+)
+```
+
+## Backend API Endpoints
+Match the backend endpoints we implemented:
+
+```javascript
+// API Endpoints from backend
+const ENDPOINTS = {
+  // Health check
+  HEALTH: '/health/',
+  
+  // Donations
+  DONATIONS: '/api/v1/donations',
+  DONATION_BY_ID: (id) => `/api/v1/donations/${id}`,
+  DONATION_STATS: '/api/v1/donations/stats',
+  
+  // Metrics (if needed)
+  METRICS: '/metrics',
+}
+```
+
+## Repository Implementation
+Implement repositories that match backend schema:
+
+```javascript
+// src/core/repositories/DonationRepository.js
+import { apiClient } from '@core/services/api'
+import { Donation } from '@core/entities/Donation'
+
+export class DonationRepository {
+  async getAll(filters = {}) {
+    const params = {
+      limit: filters.limit || 100,
+      offset: filters.offset || 0,
+      ...(filters.status && { status: filters.status }),
+    }
+
+    const response = await apiClient.get('/api/v1/donations', { params })
+    
+    return {
+      donations: response.data.donations.map(data => new Donation(data)),
+      total: response.data.total,
+      limit: response.data.limit,
+      offset: response.data.offset,
+    }
+  }
+
+  async getStats() {
+    const response = await apiClient.get('/api/v1/donations/stats')
+    return response.data
+  }
+
+  async getById(id) {
+    const response = await apiClient.get(`/api/v1/donations/${id}`)
+    return new Donation(response.data)
+  }
+
+  async create(donationData) {
+    const response = await apiClient.post('/api/v1/donations', donationData)
+    return new Donation(response.data)
+  }
+}
+```
+
+## Backend Schema Mapping
+Map frontend entities to backend schema:
+
+```javascript
+// src/core/entities/Donation.js
+export class Donation {
+  constructor(data) {
+    // Map backend fields to frontend properties
+    this.id = data.id
+    this.amount_gtq = data.amount_gtq
+    this.status_id = data.status_id
+    this.status_name = data.status_name
+    this.donor_email = data.donor_email
+    this.donor_name = data.donor_name
+    this.donor_nit = data.donor_nit
+    this.reference_code = data.reference_code
+    this.correlation_id = data.correlation_id
+    this.created_at = new Date(data.created_at)
+    this.updated_at = new Date(data.updated_at)
+    this.paid_at = data.paid_at ? new Date(data.paid_at) : null
+    this.formatted_amount = data.formatted_amount
+  }
+
+  // Status checking methods matching backend enum
+  get is_pending() {
+    return this.status_id === 1 // DonationStatus.PENDING
+  }
+
+  get is_approved() {
+    return this.status_id === 2 // DonationStatus.APPROVED
+  }
+
+  get is_declined() {
+    return this.status_id === 3 // DonationStatus.DECLINED
+  }
+
+  get is_expired() {
+    return this.status_id === 4 // DonationStatus.EXPIRED
+  }
+}
+```
+
+## React Query Integration
+Use React Query for server state management:
+
+```javascript
+// src/hooks/useDonations.js
+import { useQuery } from 'react-query'
+import { useServices } from '@core/providers/AppProvider'
+
+export const useDonations = (filters = {}) => {
+  const { donationRepository } = useServices()
+
+  return useQuery({
+    queryKey: ['donations', filters],
+    queryFn: () => donationRepository.getAll(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    keepPreviousData: true,
+    onError: (error) => {
+      console.error('Failed to fetch donations:', error)
+    }
+  })
+}
+
+export const useDonationStats = () => {
+  const { donationRepository } = useServices()
+
+  return useQuery({
+    queryKey: ['donation-stats'],
+    queryFn: () => donationRepository.getStats(),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+```
+
+## Error Handling
+Handle API errors consistently:
+
+```javascript
+// src/core/services/ErrorHandler.js
+export class ErrorHandler {
+  static handle(error) {
+    if (error.response) {
+      // Backend error response
+      const { status, data } = error.response
+      
+      switch (status) {
+        case 400:
+          return { message: data.detail || 'Invalid request' }
+        case 404:
+          return { message: 'Resource not found' }
+        case 500:
+          return { 
+            message: 'Server error occurred',
+            requestId: error.response.headers['x-request-id']
+          }
+        default:
+          return { message: 'An error occurred' }
+      }
+    } else if (error.request) {
+      // Network error
+      return { message: 'Network error - please check your connection' }
+    } else {
+      // Other error
+      return { message: error.message || 'An unexpected error occurred' }
+    }
+  }
+}
+```
+
+## Environment Configuration
+Configure API URLs via environment variables:
+
+```javascript
+// .env.example
+VITE_API_BASE_URL=http://localhost:8000
+VITE_APP_NAME=Donations Management System
+VITE_APP_VERSION=1.0.0
+
+// .env.production
+VITE_API_BASE_URL=https://api.your-domain.com
+```
+
+## Correlation ID Tracking
+Track requests with correlation IDs:
+
+```javascript
+// Include correlation ID in error reporting
+const trackError = (error, context) => {
+  const requestId = error.config?.headers['x-request-id']
+  console.error('Frontend Error:', {
+    requestId,
+    context,
+    error: error.message,
+    timestamp: new Date().toISOString(),
+  })
+}
+```
+
+## Health Check Integration
+Monitor backend health:
+
+```javascript
+// src/hooks/useHealthCheck.js
+export const useHealthCheck = () => {
+  return useQuery({
+    queryKey: ['health'],
+    queryFn: () => apiClient.get('/health/'),
+    refetchInterval: 60000, // Check every minute
+    retry: 3,
+  })
+}
+```

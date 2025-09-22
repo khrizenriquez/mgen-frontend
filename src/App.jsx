@@ -16,6 +16,7 @@ import DonationDetailPage from './pages/DonationDetailPage'
 import StatsPage from './pages/StatsPage'
 import DonatePage from './pages/DonatePage'
 import NotFoundPage from './pages/NotFoundPage'
+import Login from './pages/Login'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/stats" element={<StatsPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Suspense>
       </Layout>

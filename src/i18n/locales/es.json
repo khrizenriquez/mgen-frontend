@@ -1,0 +1,217 @@
+{
+  "common": {
+    "brand": {
+      "name": "Plataforma de donaciones"
+    },
+    "footer": {
+      "copyright": "© {{year}} Plataforma de donaciones.",
+      "version": "Version"
+    },
+    "navigation": {
+      "home": "Inicio",
+      "donations": "Donaciones",
+      "donate": "Donar Ahora",
+      "stats": "Estadísticas"
+    },
+    "buttons": {
+      "donateNow": "Donar ahora",
+      "viewDonations": "Ver donaciones",
+      "joinCause": "Únete a nuestra causa",
+      "comingSoon": "Próximamente",
+      "makeDonation": "Hacer donación",
+      "callNow": "Llamar ahora"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Ayudar sin esperar nada a cambio",
+      "subtitle": "Fomentamos la generosidad en la sociedad en beneficio de los niños de Guatemala. Tu apoyo puede ser la fuerza detrás de un cambio significativo.",
+      "donateNow": "Donar ahora",
+      "viewDonations": "Ver donaciones"
+    },
+    "impact": {
+      "title": "Nuestro impacto",
+      "subtitle": "Números que reflejan el cambio que estamos generando",
+      "stats": {
+        "donatedThisMonth": "Donado este mes",
+        "childrenEvangelized": "Niños evangelizados/año",
+        "schoolsBenefited": "Escuelas beneficiadas",
+        "scholarships": "Programa en desarrollo"
+      }
+    },
+    "about": {
+      "title": "¿Quiénes somos?",
+      "description": "Somos una organización comprometida con fomentar la generosidad en Guatemala. Creemos firmemente que la generosidad puede ser la fuerza detrás de un cambio significativo en la vida de los niños y adolescentes de escasos recursos.",
+      "mission": {
+        "title": "Misión clara",
+        "description": "Hacer un poco más dulce la vida de los niños y adolescentes de escasos recursos."
+      },
+      "transparency": {
+        "title": "Transparencia",
+        "description": "Cada donación se utiliza directamente para beneficio de los niños."
+      },
+      "impact": {
+        "title": "Impacto medible",
+        "description": "Reportamos constantemente sobre el progreso y resultados alcanzados."
+      },
+      "imageAlt": "Niños beneficiados por Más Generosidad"
+    },
+    "programs": {
+      "title": "Nuestros programas",
+      "subtitle": "Conoce las formas en que estamos transformando vidas",
+      "evangelization": {
+        "name": "Evangelización Infantil",
+        "description": "Enseñamos valores religiosos a niños, impactando positivamente su desarrollo integral.",
+        "impact": "Más de 500 niños al año"
+      },
+      "nutrition": {
+        "name": "Programa de Alimentación",
+        "description": "Proporcionamos alimentos nutritivos a escuelas para combatir la desnutrición infantil.",
+        "impact": "Más de 3 escuelas por año"
+      },
+      "scholarships": {
+        "name": "Becas Escolares",
+        "description": "Otorgamos becas educativas a niños necesitados para garantizar su acceso a la educación.",
+        "impact": "Programa en desarrollo"
+      }
+    },
+    "partners": {
+      "title": "Empresas que nos apoyan",
+      "subtitle": "Organizaciones generosas que hacen posible nuestro trabajo"
+    },
+    "help": {
+      "title": "¿Cómo puedes ayudar?",
+      "subtitle": "Múltiples formas de contribuir al bienestar de los niños",
+      "monetary": {
+        "title": "Donación monetaria",
+        "description": "Tu contribución económica nos permite comprar alimentos, materiales educativos y recursos necesarios.",
+        "button": "Donar dinero"
+      },
+      "volunteer": {
+        "title": "Voluntariado",
+        "description": "Comparte tu tiempo y habilidades ayudando directamente en nuestras actividades y programas."
+      },
+      "inKind": {
+        "title": "Donación en especie",
+        "description": "Dona alimentos, útiles escolares, juguetes y otros artículos que beneficien a los niños."
+      }
+    },
+    "contact": {
+      "title": "¿Tienes preguntas?",
+      "subtitle": "Estamos aquí para ayudarte. Contáctanos para cualquier duda o consulta.",
+      "phone": "+(502) 5468 3386",
+      "email": "info@masgenerosidad.org"
+    }
+  },
+  "auth": {
+    "brand": {
+      "name": "Plataforma de donaciones"
+    },
+    "login": {
+      "title": "Tu cuenta en",
+      "subtitle": "Ingresa tu correo electrónico",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "tu email"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "tu contraseña"
+      },
+      "submit": "Siguiente",
+      "loading": "Iniciando sesión...",
+      "forgotPassword": "← o regresa al paso anterior.",
+      "noAccount": "¿No tienes cuenta?",
+      "createAccount": "Crear cuenta nueva",
+      "error": {
+        "generic": "Error al iniciar sesión. Verifica tus credenciales."
+      }
+    },
+    "register": {
+      "title": "Crear cuenta nueva",
+      "subtitle": "Completa la información para registrarte",
+      "name": {
+        "label": "Nombre completo",
+        "placeholder": "tu nombre completo"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "tu email"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "tu contraseña"
+      },
+      "confirmPassword": {
+        "label": "Confirmar contraseña",
+        "placeholder": "confirma tu contraseña"
+      },
+      "terms": {
+        "accept": "Acepto los",
+        "terms": "términos y condiciones",
+        "and": "y la",
+        "privacy": "política de privacidad"
+      },
+      "submit": "Crear cuenta",
+      "loading": "Creando cuenta...",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "login": "Iniciar sesión",
+      "success": {
+        "title": "¡Cuenta creada!",
+        "subtitle": "Tu cuenta ha sido creada exitosamente",
+        "loginButton": "Iniciar sesión"
+      },
+      "error": {
+        "generic": "Error al crear la cuenta. Intenta nuevamente."
+      }
+    },
+    "forgotPassword": {
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Ingresa tu correo para recuperar el acceso",
+      "description": "No te preocupes, te ayudamos a recuperar tu cuenta. Ingresa tu correo electrónico y te enviaremos las instrucciones.",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "tu email"
+      },
+      "submit": "Enviar instrucciones",
+      "loading": "Enviando correo...",
+      "backToLogin": "← Volver al inicio de sesión",
+      "noAccount": "¿No tienes cuenta?",
+      "createAccount": "Crear cuenta nueva",
+      "success": {
+        "title": "Revisa tu correo",
+        "subtitle": "Te hemos enviado las instrucciones",
+        "description": "Hemos enviado un enlace de recuperación a:",
+        "instructions": "Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña. Si no encuentras el correo, revisa tu carpeta de spam.",
+        "backToLogin": "Volver a iniciar sesión",
+        "resend": "Enviar correo nuevamente"
+      },
+      "error": {
+        "generic": "Error al enviar el correo de recuperación. Intenta nuevamente."
+      }
+    },
+    "validation": {
+      "email": {
+        "required": "El correo electrónico es requerido",
+        "invalid": "Ingresa un correo electrónico válido"
+      },
+      "password": {
+        "required": "La contraseña es requerida",
+        "minLength": "La contraseña debe tener al menos 6 caracteres",
+        "strength": "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
+      },
+      "name": {
+        "required": "El nombre es requerido",
+        "minLength": "El nombre debe tener al menos 2 caracteres",
+        "maxLength": "El nombre no puede tener más de 50 caracteres"
+      },
+      "confirmPassword": {
+        "required": "Confirma tu contraseña",
+        "match": "Las contraseñas deben coincidir"
+      },
+      "terms": {
+        "required": "Debes aceptar los términos y condiciones"
+      }
+    }
+  }
+}

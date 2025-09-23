@@ -3,6 +3,7 @@
  */
 import { Routes, Route } from 'react-router-dom'
 import { Suspense } from 'react'
+import './i18n' // Initialize i18next
 
 import Layout from './components/layout/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
@@ -15,6 +16,13 @@ import CreateDonationPage from './pages/CreateDonationPage'
 import DonationDetailPage from './pages/DonationDetailPage'
 import StatsPage from './pages/StatsPage'
 import DonatePage from './pages/DonatePage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import UserDashboardPage from './pages/UserDashboardPage'
+import DonorDashboardPage from './pages/DonorDashboardPage'
+import DonorProfilePage from './pages/DonorProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
@@ -28,6 +36,13 @@ function App() {
             <Route path="/donations/:id" element={<DonationDetailPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/stats" element={<StatsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/user-dashboard" element={<UserDashboardPage />} />
+            <Route path="/donor-dashboard" element={<DonorDashboardPage />} />
+            <Route path="/donor/profile" element={<DonorProfilePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

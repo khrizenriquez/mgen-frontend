@@ -56,7 +56,7 @@ export default function HomePage() {
           <Row className="align-items-center">
             <Col lg={6} className="mb-4 mb-lg-0">
               <h1 className="display-4 fw-bold mb-3">
-                Ayudar sin esperar nada a cambio
+                Ayudar sin esperar nada a cambiosss
               </h1>
               <p className="lead mb-4">
                 Fomentamos la generosidad en la sociedad en beneficio de los niños de Guatemala. 

@@ -8,6 +8,7 @@ import { Form, Button, Alert } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { useTranslation } from 'react-i18next'
 import AuthLayout from '../components/layout/AuthLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import AuthService from '../core/services/AuthService'
@@ -16,14 +17,15 @@ import AuthService from '../core/services/AuthService'
 const forgotPasswordSchema = yup.object({
   email: yup
     .string()
-    .email('Ingresa un correo electrónico válido')
-    .required('El correo electrónico es requerido'),
+    .email('auth.validation.email.invalid')
+    .required('auth.validation.email.required'),
 })
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [resetError, setResetError] = useState('')
   const [resetSuccess, setResetSuccess] = useState(false)
+  const { t } = useTranslation()
 
   const {
     register,
@@ -39,15 +41,15 @@ export default function ForgotPasswordPage() {
     setIsLoading(true)
     setResetError('')
     setResetSuccess(false)
-    
+
     try {
       const result = await AuthService.resetPassword(data.email)
-      
+
       if (result.success) {
         setResetSuccess(true)
       }
     } catch (error) {
-      setResetError(error.message || 'Error al enviar el correo de recuperación. Intenta nuevamente.')
+      setResetError(error.message || t('auth.forgotPassword.error.generic'))
     } finally {
       setIsLoading(false)
     }
@@ -55,39 +57,38 @@ export default function ForgotPasswordPage() {
 
   if (resetSuccess) {
     return (
-      <AuthLayout 
-        title="Revisa tu correo"
-        subtitle="Te hemos enviado las instrucciones"
+      <AuthLayout
+        title={t('auth.forgotPassword.success.title')}
+        subtitle={t('auth.forgotPassword.success.subtitle')}
       >
         <div className="text-center">
           <div className="mb-4">
             <i className="bi bi-envelope-check-fill text-success" style={{fontSize: '4rem'}}></i>
           </div>
           <p className="text-muted mb-3">
-            Hemos enviado un enlace de recuperación a:
+            {t('auth.forgotPassword.success.description')}
           </p>
           <p className="fw-bold mb-4 text-dark">
             {getValues('email')}
           </p>
           <p className="text-muted small mb-4">
-            Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.
-            Si no encuentras el correo, revisa tu carpeta de spam.
+            {t('auth.forgotPassword.success.instructions')}
           </p>
-          
+
           <div className="d-grid gap-2">
             <Link to="/login">
               <Button className="auth-btn auth-btn-primary w-100">
-                Volver a iniciar sesión
+                {t('auth.forgotPassword.success.backToLogin')}
               </Button>
             </Link>
-            <Button 
+            <Button
               className="auth-btn auth-btn-secondary w-100"
               onClick={() => {
                 setResetSuccess(false)
                 setResetError('')
               }}
             >
-              Enviar correo nuevamente
+              {t('auth.forgotPassword.success.resend')}
             </Button>
           </div>
         </div>
@@ -96,9 +97,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout 
-      title="¿Olvidaste tu contraseña?"
-      subtitle="Ingresa tu correo para recuperar el acceso"
+    <AuthLayout
+      title={t('auth.forgotPassword.title')}
+      subtitle={t('auth.forgotPassword.subtitle')}
     >
       <Form 
         className={`auth-form ${isLoading ? 'loading' : ''}`}
@@ -118,43 +119,42 @@ export default function ForgotPasswordPage() {
             <i className="bi bi-key-fill text-muted" style={{fontSize: '2.5rem'}}></i>
           </div>
           <p className="text-muted small">
-            No te preocupes, te ayudamos a recuperar tu cuenta. 
-            Ingresa tu correo electrónico y te enviaremos las instrucciones.
+            {t('auth.forgotPassword.description')}
           </p>
         </div>
 
         {/* Email field */}
         <div className="mb-4">
-          <Form.Label>Correo electrónico</Form.Label>
+          <Form.Label>{t('auth.forgotPassword.email.label')}</Form.Label>
           <Form.Control
             type="email"
-            placeholder="tu email"
+            placeholder={t('auth.forgotPassword.email.placeholder')}
             {...register('email')}
             isInvalid={!!errors.email}
             disabled={isLoading}
           />
           {errors.email && (
             <Form.Control.Feedback type="invalid">
-              {errors.email.message}
+              {t(errors.email.message)}
             </Form.Control.Feedback>
           )}
         </div>
 
         {/* Submit button */}
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="auth-btn auth-btn-primary w-100 mb-3"
           disabled={isLoading || isSubmitting}
         >
           {isLoading ? (
             <>
               <LoadingSpinner size="small" text="" className="me-2" />
-              Enviando correo...
+              {t('auth.forgotPassword.loading')}
             </>
           ) : (
             <>
               <i className="bi bi-envelope-fill me-2"></i>
-              Enviar instrucciones
+              {t('auth.forgotPassword.submit')}
             </>
           )}
         </Button>
@@ -162,20 +162,20 @@ export default function ForgotPasswordPage() {
         {/* Back to login link */}
         <div className="text-center mb-3">
           <Link to="/login" className="auth-link">
-            ← Volver al inicio de sesión
+            {t('auth.forgotPassword.backToLogin')}
           </Link>
         </div>
 
         {/* Divider */}
         <div className="auth-divider">
-          <span>¿No tienes cuenta?</span>
+          <span>{t('auth.forgotPassword.noAccount')}</span>
         </div>
 
         {/* Register link */}
         <div className="text-center">
           <Link to="/register">
             <Button className="auth-btn auth-btn-secondary w-100">
-              Crear cuenta nueva
+              {t('auth.forgotPassword.createAccount')}
             </Button>
           </Link>
         </div>

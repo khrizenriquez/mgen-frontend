@@ -3,6 +3,7 @@
  */
 import { Routes, Route } from 'react-router-dom'
 import { Suspense } from 'react'
+import './i18n' // Initialize i18next
 
 import Layout from './components/layout/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'

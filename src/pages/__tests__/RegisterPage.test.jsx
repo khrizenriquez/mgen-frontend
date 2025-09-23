@@ -3,9 +3,11 @@
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { I18nextProvider } from 'react-i18next'
 import { vi } from 'vitest'
 import RegisterPage from '../RegisterPage'
 import AuthService from '../../core/services/AuthService'
+import i18n from '../../i18n'
 
 // Mock AuthService
 vi.mock('../../core/services/AuthService', () => ({
@@ -16,9 +18,11 @@ vi.mock('../../core/services/AuthService', () => ({
 
 // Test wrapper component
 const TestWrapper = ({ children }) => (
-  <BrowserRouter>
-    {children}
-  </BrowserRouter>
+  <I18nextProvider i18n={i18n}>
+    <BrowserRouter>
+      {children}
+    </BrowserRouter>
+  </I18nextProvider>
 )
 
 describe('RegisterPage', () => {
@@ -53,9 +57,9 @@ describe('RegisterPage', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('El nombre es requerido')).toBeInTheDocument()
+      expect(screen.getByText('El nombre debe tener al menos 2 caracteres')).toBeInTheDocument()
       expect(screen.getByText('El correo electrónico es requerido')).toBeInTheDocument()
-      expect(screen.getByText('La contraseña es requerida')).toBeInTheDocument()
+      expect(screen.getByText('La contraseña debe tener al menos 8 caracteres')).toBeInTheDocument()
       expect(screen.getByText('Confirma tu contraseña')).toBeInTheDocument()
     })
   })

@@ -3,9 +3,11 @@
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { I18nextProvider } from 'react-i18next'
 import { vi } from 'vitest'
 import LoginPage from '../LoginPage'
 import AuthService from '../../core/services/AuthService'
+import i18n from '../../i18n'
 
 // Mock AuthService
 vi.mock('../../core/services/AuthService', () => ({
@@ -26,9 +28,11 @@ vi.mock('react-router-dom', async () => {
 
 // Test wrapper component
 const TestWrapper = ({ children }) => (
-  <BrowserRouter>
-    {children}
-  </BrowserRouter>
+  <I18nextProvider i18n={i18n}>
+    <BrowserRouter>
+      {children}
+    </BrowserRouter>
+  </I18nextProvider>
 )
 
 describe('LoginPage', () => {
@@ -62,7 +66,7 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('El correo electrónico es requerido')).toBeInTheDocument()
-      expect(screen.getByText('La contraseña es requerida')).toBeInTheDocument()
+      expect(screen.getByText('La contraseña debe tener al menos 6 caracteres')).toBeInTheDocument()
     })
   })
 
@@ -183,6 +187,6 @@ describe('LoginPage', () => {
     )
 
     expect(screen.getByRole('link', { name: /crear cuenta nueva/i })).toHaveAttribute('href', '/register')
-    expect(screen.getByRole('link', { name: /regresa al paso anterior/i })).toHaveAttribute('href', '/forgot-password')
+    expect(screen.getByRole('link', { name: /olvidé mi contraseña/i })).toHaveAttribute('href', '/forgot-password')
   })
 })

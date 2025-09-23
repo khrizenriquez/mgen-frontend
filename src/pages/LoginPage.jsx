@@ -8,6 +8,7 @@ import { Form, Button, Alert } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { useTranslation } from 'react-i18next'
 import AuthLayout from '../components/layout/AuthLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import AuthService from '../core/services/AuthService'
@@ -16,18 +17,19 @@ import AuthService from '../core/services/AuthService'
 const loginSchema = yup.object({
   email: yup
     .string()
-    .email('Ingresa un correo electrónico válido')
-    .required('El correo electrónico es requerido'),
+    .email('auth.validation.email.invalid')
+    .required('auth.validation.email.required'),
   password: yup
     .string()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
-    .required('La contraseña es requerida'),
+    .min(6, 'auth.validation.password.minLength')
+    .required('auth.validation.password.required'),
 })
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [loginError, setLoginError] = useState('')
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const {
     register,
@@ -41,25 +43,25 @@ export default function LoginPage() {
   const onSubmit = async (data) => {
     setIsLoading(true)
     setLoginError('')
-    
+
     try {
       const result = await AuthService.login(data)
-      
+
       if (result.success) {
         // Redirect to home page after successful login
         navigate('/', { replace: true })
       }
     } catch (error) {
-      setLoginError(error.message || 'Error al iniciar sesión. Verifica tus credenciales.')
+      setLoginError(error.message || t('auth.login.error.generic'))
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <AuthLayout 
-      title="Tu cuenta en"
-      subtitle="Ingresa tu correo electrónico"
+    <AuthLayout
+      title={t('auth.login.title')}
+      subtitle={t('auth.login.subtitle')}
     >
       <Form 
         className={`auth-form ${isLoading ? 'loading' : ''}`}
@@ -75,8 +77,9 @@ export default function LoginPage() {
 
         {/* Email field */}
         <div className="mb-3">
-          <Form.Label>Correo electrónico</Form.Label>
+          <Form.Label htmlFor="email">Correo electrónico</Form.Label>
           <Form.Control
+            id="email"
             type="email"
             placeholder="tu email"
             {...register('email')}
@@ -92,8 +95,9 @@ export default function LoginPage() {
 
         {/* Password field */}
         <div className="mb-4">
-          <Form.Label>Contraseña</Form.Label>
+          <Form.Label htmlFor="password">Contraseña</Form.Label>
           <Form.Control
+            id="password"
             type="password"
             placeholder="tu contraseña"
             {...register('password')}

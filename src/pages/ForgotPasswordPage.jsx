@@ -125,8 +125,9 @@ export default function ForgotPasswordPage() {
 
         {/* Email field */}
         <div className="mb-4">
-          <Form.Label>{t('auth.forgotPassword.email.label')}</Form.Label>
+          <Form.Label htmlFor="email">{t('auth.forgotPassword.email.label')}</Form.Label>
           <Form.Control
+            id="email"
             type="email"
             placeholder={t('auth.forgotPassword.email.placeholder')}
             {...register('email')}

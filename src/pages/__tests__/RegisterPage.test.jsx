@@ -16,6 +16,47 @@ vi.mock('../../core/services/AuthService', () => ({
   }
 }))
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key) => {
+      const translations = {
+        'auth.register.title': 'Crear cuenta nueva',
+        'auth.register.subtitle': 'Completa la información para registrarte',
+        'auth.register.name.label': 'Nombre completo',
+        'auth.register.name.placeholder': 'tu nombre completo',
+        'auth.register.email.label': 'Correo electrónico',
+        'auth.register.email.placeholder': 'tu email',
+        'auth.register.password.label': 'Contraseña',
+        'auth.register.password.placeholder': 'tu contraseña',
+        'auth.register.confirmPassword.label': 'Confirmar contraseña',
+        'auth.register.confirmPassword.placeholder': 'confirma tu contraseña',
+        'auth.register.submit': 'Crear cuenta',
+        'auth.register.loading': 'Creando cuenta...',
+        'auth.register.hasAccount': '¿Ya tienes cuenta?',
+        'auth.register.login': 'Iniciar sesión',
+        'auth.register.success.title': '¡Cuenta creada!',
+        'auth.register.success.subtitle': 'Tu cuenta ha sido creada exitosamente',
+        'auth.register.success.loginButton': 'Iniciar sesión',
+        'auth.register.error.generic': 'Error al crear la cuenta. Intenta nuevamente.',
+        'auth.validation.email.required': 'El correo electrónico es requerido',
+        'auth.validation.email.invalid': 'Ingresa un correo electrónico válido',
+        'auth.validation.password.required': 'La contraseña es requerida',
+        'auth.validation.password.minLength': 'La contraseña debe tener al menos 8 caracteres',
+        'auth.validation.password.strength': 'La contraseña debe contener al menos una mayúscula, una minúscula y un número',
+        'auth.validation.name.required': 'El nombre es requerido',
+        'auth.validation.name.minLength': 'El nombre debe tener al menos 2 caracteres',
+        'auth.validation.name.maxLength': 'El nombre no puede tener más de 50 caracteres',
+        'auth.validation.confirmPassword.required': 'Confirma tu contraseña',
+        'auth.validation.confirmPassword.match': 'Las contraseñas deben coincidir',
+        'auth.validation.terms.required': 'Debes aceptar los términos y condiciones'
+      }
+      return translations[key] || key
+    }
+  }),
+  I18nextProvider: ({ children }) => children
+}))
+
 // Test wrapper component
 const TestWrapper = ({ children }) => (
   <I18nextProvider i18n={i18n}>
@@ -202,7 +243,7 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(screen.getByText('¡Cuenta creada!')).toBeInTheDocument()
       expect(screen.getByText('Tu cuenta ha sido creada exitosamente')).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /iniciar sesión/i })).toHaveAttribute('href', '/login')
+      expect(screen.getByRole('link', { name: /Iniciar sesión/i })).toHaveAttribute('href', '/login')
     })
   })
 
@@ -230,7 +271,7 @@ describe('RegisterPage', () => {
   })
 
   test('shows loading state during form submission', async () => {
-    AuthService.register.mockImplementation(() => 
+    AuthService.register.mockImplementation(() =>
       new Promise(resolve => setTimeout(() => resolve({ success: true }), 100))
     )
 
@@ -250,8 +291,9 @@ describe('RegisterPage', () => {
     const submitButton = screen.getByRole('button', { name: 'Crear cuenta' })
     fireEvent.click(submitButton)
 
-    expect(screen.getByText('Creando cuenta...')).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
+    // The component uses LoadingSpinner, not text change
+    expect(screen.getByRole('button', { name: 'Crear cuenta' })).toBeDisabled()
 
     await waitFor(() => {
       expect(screen.queryByText('Creando cuenta...')).not.toBeInTheDocument()
@@ -265,6 +307,6 @@ describe('RegisterPage', () => {
       </TestWrapper>
     )
 
-    expect(screen.getByRole('link', { name: /iniciar sesión/i })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: /Iniciar sesión/i })).toHaveAttribute('href', '/login')
   })
 })

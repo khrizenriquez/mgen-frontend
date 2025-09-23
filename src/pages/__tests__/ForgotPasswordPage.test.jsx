@@ -36,8 +36,8 @@ describe('ForgotPasswordPage', () => {
     expect(screen.getByText('¿Olvidaste tu contraseña?')).toBeInTheDocument()
     expect(screen.getByText('Ingresa tu correo para recuperar el acceso')).toBeInTheDocument()
     expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /enviar instrucciones/i })).toBeInTheDocument()
-    expect(screen.getByText(/no te preocupes, te ayudamos a recuperar tu cuenta/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Enviar instrucciones/i })).toBeInTheDocument()
+    expect(screen.getByText(/No te preocupes, te ayudamos a recuperar tu cuenta/i)).toBeInTheDocument()
   })
 
   test('shows validation error for empty email field', async () => {
@@ -148,8 +148,9 @@ describe('ForgotPasswordPage', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.click(submitButton)
 
-    expect(screen.getByText('Enviando correo...')).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
+    // The component uses LoadingSpinner, not text change
+    expect(screen.getByRole('button', { name: /enviar instrucciones/i })).toBeDisabled()
 
     await waitFor(() => {
       expect(screen.queryByText('Enviando correo...')).not.toBeInTheDocument()

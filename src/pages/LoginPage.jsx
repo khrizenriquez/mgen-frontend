@@ -14,15 +14,15 @@ import LoadingSpinner from '../components/ui/LoadingSpinner'
 import AuthService from '../core/services/AuthService'
 
 // Validation schema
-const loginSchema = yup.object({
+const createLoginSchema = (t) => yup.object({
   email: yup
     .string()
-    .email('auth.validation.email.invalid')
-    .required('auth.validation.email.required'),
+    .email(t('auth.validation.email.invalid'))
+    .required(t('auth.validation.email.required')),
   password: yup
     .string()
-    .min(6, 'auth.validation.password.minLength')
-    .required('auth.validation.password.required'),
+    .min(6, t('auth.validation.password.minLength'))
+    .required(t('auth.validation.password.required')),
 })
 
 export default function LoginPage() {
@@ -30,6 +30,8 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState('')
   const navigate = useNavigate()
   const { t } = useTranslation()
+
+  const loginSchema = createLoginSchema(t)
 
   const {
     register,
@@ -77,11 +79,11 @@ export default function LoginPage() {
 
         {/* Email field */}
         <div className="mb-3">
-          <Form.Label htmlFor="email">Correo electrónico</Form.Label>
+          <Form.Label htmlFor="email">{t('auth.login.email.label')}</Form.Label>
           <Form.Control
             id="email"
             type="email"
-            placeholder="tu email"
+            placeholder={t('auth.login.email.placeholder')}
             {...register('email')}
             isInvalid={!!errors.email}
             disabled={isLoading}
@@ -95,11 +97,11 @@ export default function LoginPage() {
 
         {/* Password field */}
         <div className="mb-4">
-          <Form.Label htmlFor="password">Contraseña</Form.Label>
+          <Form.Label htmlFor="password">{t('auth.login.password.label')}</Form.Label>
           <Form.Control
             id="password"
             type="password"
-            placeholder="tu contraseña"
+            placeholder={t('auth.login.password.placeholder')}
             {...register('password')}
             isInvalid={!!errors.password}
             disabled={isLoading}
@@ -112,38 +114,38 @@ export default function LoginPage() {
         </div>
 
         {/* Submit button */}
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="auth-btn auth-btn-primary w-100 mb-3"
           disabled={isLoading || isSubmitting}
         >
           {isLoading ? (
             <>
               <LoadingSpinner size="small" text="" className="me-2" />
-              Iniciando sesión...
+              {t('auth.login.loading')}
             </>
           ) : (
-            'Siguiente'
+            t('auth.login.submit')
           )}
         </Button>
 
         {/* Forgot password link */}
         <div className="text-center mb-3">
           <Link to="/forgot-password" className="auth-link">
-            ← Olvidé mi contraseña
+            {t('auth.login.forgotPassword')}
           </Link>
         </div>
 
         {/* Divider */}
         <div className="auth-divider">
-          <span>¿No tienes cuenta?</span>
+          <span>{t('auth.login.noAccount')}</span>
         </div>
 
         {/* Register link */}
         <div className="text-center">
           <Link to="/register">
             <Button className="auth-btn auth-btn-secondary w-100">
-              Crear cuenta nueva
+              {t('auth.login.createAccount')}
             </Button>
           </Link>
         </div>

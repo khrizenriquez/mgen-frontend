@@ -197,7 +197,7 @@
       },
       "password": {
         "required": "La contraseña es requerida",
-        "minLength": "La contraseña debe tener al menos 6 caracteres",
+        "minLength": "La contraseña debe tener al menos 8 caracteres",
         "strength": "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
       },
       "name": {

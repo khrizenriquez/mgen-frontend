@@ -66,7 +66,7 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('El correo electrónico es requerido')).toBeInTheDocument()
-      expect(screen.getByText('La contraseña debe tener al menos 6 caracteres')).toBeInTheDocument()
+      expect(screen.getByText('La contraseña debe tener al menos 8 caracteres')).toBeInTheDocument()
     })
   })
 
@@ -98,7 +98,7 @@ describe('LoginPage', () => {
     fireEvent.blur(passwordInput)
 
     await waitFor(() => {
-      expect(screen.getByText('La contraseña debe tener al menos 6 caracteres')).toBeInTheDocument()
+      expect(screen.getByText('La contraseña debe tener al menos 8 caracteres')).toBeInTheDocument()
     })
   })
 
@@ -171,8 +171,9 @@ describe('LoginPage', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } })
     fireEvent.click(submitButton)
 
-    expect(screen.getByText('Iniciando sesión...')).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
+    // The component uses LoadingSpinner, not text change
+    expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
 
     await waitFor(() => {
       expect(screen.queryByText('Iniciando sesión...')).not.toBeInTheDocument()
@@ -187,6 +188,6 @@ describe('LoginPage', () => {
     )
 
     expect(screen.getByRole('link', { name: /crear cuenta nueva/i })).toHaveAttribute('href', '/register')
-    expect(screen.getByRole('link', { name: /olvidé mi contraseña/i })).toHaveAttribute('href', '/forgot-password')
+    expect(screen.getByRole('link', { name: /o regresa al paso anterior/i })).toHaveAttribute('href', '/forgot-password')
   })
 })

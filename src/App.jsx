@@ -19,6 +19,9 @@ import DonatePage from './pages/DonatePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import UserDashboardPage from './pages/UserDashboardPage'
+import DonorDashboardPage from './pages/DonorDashboardPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
@@ -35,6 +38,9 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/user-dashboard" element={<UserDashboardPage />} />
+            <Route path="/donor-dashboard" element={<DonorDashboardPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

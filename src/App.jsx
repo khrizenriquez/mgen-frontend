@@ -22,6 +22,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import UserDashboardPage from './pages/UserDashboardPage'
 import DonorDashboardPage from './pages/DonorDashboardPage'
+import DonorProfilePage from './pages/DonorProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
             <Route path="/user-dashboard" element={<UserDashboardPage />} />
             <Route path="/donor-dashboard" element={<DonorDashboardPage />} />
+            <Route path="/donor/profile" element={<DonorProfilePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

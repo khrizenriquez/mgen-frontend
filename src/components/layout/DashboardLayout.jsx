@@ -150,6 +150,13 @@ export default function DashboardLayout({ children }) {
 
           {/* User Info and Logout */}
           <div className="d-flex align-items-center">
+            {/* Mobile: Show compact user info */}
+            <div className="d-flex d-md-none align-items-center me-2">
+              <span className={`badge bg-${getRoleColor(userRole)} text-white me-2`}>
+                {getRoleDisplayName(userRole)}
+              </span>
+            </div>
+            {/* Desktop: Show full user info */}
             <div className="d-none d-md-flex align-items-center me-3">
               <span className="text-muted small me-2">Bienvenido,</span>
               <span className="fw-medium me-2">{userName || 'Usuario'}</span>

@@ -90,10 +90,17 @@ export default function Layout({ children }) {
           </div>
 
           {/* Authentication / User section */}
-          <div className="d-flex align-items-center ms-3">
+          <div className="d-flex align-items-center ms-2 ms-md-3">
             {isAuthenticated ? (
               // Authenticated user - show dashboard link and user info
               <>
+                {/* Mobile: Show compact user info */}
+                <div className="d-flex d-md-none align-items-center me-2">
+                  <span className="badge bg-primary text-white">
+                    {currentUser?.roles?.[0] || 'USER'}
+                  </span>
+                </div>
+                {/* Desktop: Show full user info */}
                 <div className="d-none d-md-flex align-items-center me-3">
                   <span className="text-muted small me-2">Bienvenido,</span>
                   <span className="fw-medium me-2">{currentUser?.email || 'Usuario'}</span>
@@ -103,14 +110,14 @@ export default function Layout({ children }) {
                 </div>
                 <Link to="/dashboard" className="btn btn-outline-primary btn-sm">
                   <i className="bi bi-speedometer2 me-1"></i>
-                  Dashboard
+                  <span className="d-none d-sm-inline">Dashboard</span>
                 </Link>
               </>
             ) : (
               // Unauthenticated user - show login link
               <Link to="/login" className="btn btn-outline-primary btn-sm">
                 <i className="bi bi-person-circle me-1"></i>
-                Iniciar Sesión
+                <span className="d-none d-sm-inline">Iniciar Sesión</span>
               </Link>
             )}
           </div>
@@ -127,12 +134,16 @@ export default function Layout({ children }) {
       {/* Footer */}
       <footer className="footer bg-white border-top py-3 mt-auto">
         <div className="container">
-          <div className="d-flex justify-content-between align-items-center flex-wrap">
-            <div className="text-muted small">
-              {t('common.footer.copyright', { year: new Date().getFullYear() })}
+          <div className="row">
+            <div className="col-12 col-md-6 text-center text-md-start">
+              <div className="text-muted small">
+                {t('common.footer.copyright', { year: new Date().getFullYear() })}
+              </div>
             </div>
-            <div className="text-muted small">
-              {t('common.footer.version')} {import.meta.env.VITE_APP_VERSION || '1.0.0'}
+            <div className="col-12 col-md-6 text-center text-md-end">
+              <div className="text-muted small">
+                {t('common.footer.version')} {import.meta.env.VITE_APP_VERSION || '1.0.0'}
+              </div>
             </div>
           </div>
         </div>

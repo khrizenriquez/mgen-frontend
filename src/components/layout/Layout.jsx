@@ -3,20 +3,45 @@
  * Provides the overall structure and navigation for the app
  */
 import { Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import AuthService from '../../core/services/AuthService'
 
 export default function Layout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   const location = useLocation()
   const { t } = useTranslation()
 
-  const navigation = [
+  useEffect(() => {
+    // Get current user info
+    const user = AuthService.getCurrentUser()
+    setCurrentUser(user)
+
+    // Subscribe to auth changes
+    const unsubscribe = AuthService.subscribe((user) => {
+      setCurrentUser(user)
+    })
+
+    return unsubscribe
+  }, [])
+
+  const isAuthenticated = AuthService.isAuthenticated()
+
+  // Base navigation items
+  const baseNavigation = [
     { name: t('common.navigation.home'), href: '/', icon: 'bi-house' },
     { name: t('common.navigation.donations'), href: '/donations', icon: 'bi-list-ul' },
     { name: t('common.navigation.donate'), href: '/donate', icon: 'bi-heart-fill' },
+  ]
+
+  // Statistics only for authenticated users
+  const authenticatedNavigation = [
+    ...baseNavigation,
     { name: t('common.navigation.stats'), href: '/stats', icon: 'bi-graph-up' },
   ]
+
+  const navigation = isAuthenticated ? authenticatedNavigation : baseNavigation
 
   return (
     <div className="min-vh-100 bg-light d-flex flex-column">
@@ -62,6 +87,32 @@ export default function Layout({ children }) {
                 )
               })}
             </ul>
+          </div>
+
+          {/* Authentication / User section */}
+          <div className="d-flex align-items-center ms-3">
+            {isAuthenticated ? (
+              // Authenticated user - show dashboard link and user info
+              <>
+                <div className="d-none d-md-flex align-items-center me-3">
+                  <span className="text-muted small me-2">Bienvenido,</span>
+                  <span className="fw-medium me-2">{currentUser?.email || 'Usuario'}</span>
+                  <span className="badge bg-primary text-white">
+                    {currentUser?.roles?.[0] || 'USER'}
+                  </span>
+                </div>
+                <Link to="/dashboard" className="btn btn-outline-primary btn-sm">
+                  <i className="bi bi-speedometer2 me-1"></i>
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              // Unauthenticated user - show login link
+              <Link to="/login" className="btn btn-outline-primary btn-sm">
+                <i className="bi bi-person-circle me-1"></i>
+                Iniciar Sesión
+              </Link>
+            )}
           </div>
         </div>
       </nav>

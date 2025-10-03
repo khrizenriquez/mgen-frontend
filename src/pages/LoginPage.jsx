@@ -43,17 +43,24 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data) => {
+    console.log('Login form submitted with data:', data)
     setIsLoading(true)
     setLoginError('')
 
     try {
+      console.log('Calling AuthService.login...')
       const result = await AuthService.login(data)
+      console.log('AuthService.login result:', result)
 
       if (result.success) {
-        // Redirect to home page after successful login
-        navigate('/', { replace: true })
+        console.log('Login successful, redirecting to dashboard...')
+        // Redirect to appropriate dashboard based on user role
+        const dashboardRoute = AuthService.getDashboardRoute()
+        console.log('Dashboard route:', dashboardRoute)
+        navigate(dashboardRoute, { replace: true })
       }
     } catch (error) {
+      console.error('Login form error:', error)
       setLoginError(error.message || t('auth.login.error.generic'))
     } finally {
       setIsLoading(false)

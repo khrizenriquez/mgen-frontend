@@ -1,11 +1,15 @@
 /**
  * Authentication Service
- * Handles authentication logic without backend connection
+ * Handles authentication logic with backend integration
  */
+import api from './api.js'
+
 class AuthService {
   constructor() {
     this.currentUser = null
     this.listeners = []
+    this.isRefreshing = false
+    this.failedQueue = []
     this.loadUserFromStorage()
   }
 
@@ -15,32 +19,62 @@ class AuthService {
   loadUserFromStorage() {
     try {
       const userData = localStorage.getItem('currentUser')
-      if (userData) {
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (userData && accessToken) {
         this.currentUser = JSON.parse(userData)
         this.notifyListeners()
+      } else {
+        // Clean up if tokens are missing
+        this.clearTokens()
       }
     } catch (error) {
       console.error('Error loading user from storage:', error)
-      localStorage.removeItem('currentUser')
+      this.clearTokens()
     }
   }
 
   /**
-   * Save user data to localStorage
+   * Save user data and tokens to localStorage
    */
-  saveUserToStorage(user) {
+  saveUserToStorage(user, tokens = {}) {
     try {
-      localStorage.setItem('currentUser', JSON.stringify(user))
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user))
+      }
+      if (tokens.access_token) {
+        localStorage.setItem('accessToken', tokens.access_token)
+      }
+      if (tokens.refresh_token) {
+        localStorage.setItem('refreshToken', tokens.refresh_token)
+      }
     } catch (error) {
       console.error('Error saving user to storage:', error)
     }
   }
 
   /**
-   * Remove user data from localStorage
+   * Clear all authentication data from localStorage
    */
-  removeUserFromStorage() {
+  clearTokens() {
     localStorage.removeItem('currentUser')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+  }
+
+  /**
+   * Get stored access token
+   */
+  getAccessToken() {
+    return localStorage.getItem('accessToken')
+  }
+
+  /**
+   * Get stored refresh token
+   */
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken')
   }
 
   /**
@@ -75,55 +109,91 @@ class AuthService {
   }
 
   /**
-   * Simulate login (without backend)
+   * Login user with backend API
    */
   async login(credentials) {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Starting login process...')
+      const response = await api.post('/auth/login', credentials)
+      const { access_token, refresh_token } = response.data
+      console.log('Login API call successful')
 
-      // Simulate authentication logic
-      // In a real app, this would call the backend API
-      const mockUser = {
-        id: 1,
-        name: 'Usuario Ejemplo',
-        email: credentials.email,
-        token: 'mock-jwt-token-' + Date.now(),
+      // Get user info after successful login
+      console.log('Fetching user info...')
+      const userInfo = await this.getUserInfo(access_token)
+      console.log('User info fetched:', userInfo)
+
+      const user = {
+        id: userInfo.id,
+        email: userInfo.email,
+        roles: userInfo.roles,
         loginAt: new Date().toISOString()
       }
+      console.log('User object created:', user)
 
-      this.currentUser = mockUser
-      this.saveUserToStorage(mockUser)
+      this.currentUser = user
+      this.saveUserToStorage(user, { access_token, refresh_token })
       this.notifyListeners()
+      console.log('User state updated and saved')
 
-      return { success: true, user: mockUser }
+      return { success: true, user, tokens: { access_token, refresh_token } }
     } catch (error) {
-      throw new Error('Error al iniciar sesión')
+      console.error('Login error:', error)
+      throw new Error(error.response?.data?.detail || 'Error al iniciar sesión')
     }
   }
 
   /**
-   * Simulate registration (without backend)
+   * Register user with backend API
    */
   async register(userData) {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await api.post('/auth/register', userData)
+      return { success: true, message: response.data.message }
+    } catch (error) {
+      console.error('Registration error:', error)
+      throw new Error(error.response?.data?.detail || 'Error al crear la cuenta')
+    }
+  }
 
-      // Simulate registration logic
-      // In a real app, this would call the backend API
-      const mockUser = {
-        id: Math.floor(Math.random() * 1000),
-        name: userData.name,
-        email: userData.email,
-        token: 'mock-jwt-token-' + Date.now(),
-        createdAt: new Date().toISOString()
+  /**
+   * Get user information from backend
+   */
+  async getUserInfo(accessToken = null) {
+    try {
+      const config = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
+      const response = await api.get('/auth/me', config)
+      return response.data
+    } catch (error) {
+      console.error('Get user info error:', error)
+      throw new Error('Error al obtener información del usuario')
+    }
+  }
+
+  /**
+   * Refresh access token
+   */
+  async refreshToken() {
+    try {
+      const refreshToken = this.getRefreshToken()
+      if (!refreshToken) {
+        throw new Error('No refresh token available')
       }
 
-      // Don't auto-login after registration in this simulation
-      return { success: true, user: mockUser }
+      const response = await api.post('/auth/refresh', { refresh_token: refreshToken })
+      const { access_token, refresh_token: newRefreshToken } = response.data
+
+      // Update stored tokens
+      this.saveUserToStorage(null, { access_token, refresh_token: newRefreshToken })
+
+      return { access_token, refresh_token: newRefreshToken }
     } catch (error) {
-      throw new Error('Error al crear la cuenta')
+      console.error('Token refresh error:', error)
+      // Clear tokens on refresh failure
+      this.clearTokens()
+      this.currentUser = null
+      this.notifyListeners()
+      throw new Error('Sesión expirada, por favor inicia sesión nuevamente')
     }
   }
 
@@ -146,12 +216,30 @@ class AuthService {
   }
 
   /**
-   * Logout user
+   * Logout user - clears local session and notifies backend
    */
-  logout() {
+  async logout() {
+    try {
+      // Attempt to notify backend about logout (optional - don't fail if backend is down)
+      const token = this.getAccessToken()
+      if (token) {
+        try {
+          await api.post('/auth/logout')
+        } catch (apiError) {
+          // Log error but don't fail logout - backend might be down or endpoint not implemented yet
+          console.warn('Backend logout notification failed:', apiError.message)
+        }
+      }
+    } catch (error) {
+      // Log any unexpected errors but continue with local logout
+      console.error('Logout error:', error)
+    }
+
+    // Always clear local session regardless of backend response
     this.currentUser = null
-    this.removeUserFromStorage()
+    this.clearTokens()
     this.notifyListeners()
+
     return { success: true }
   }
 
@@ -164,36 +252,49 @@ class AuthService {
         throw new Error('Usuario no autenticado')
       }
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800))
-
-      // Update user data
-      this.currentUser = { ...this.currentUser, ...userData }
-      this.saveUserToStorage(this.currentUser)
-      this.notifyListeners()
-
-      return { success: true, user: this.currentUser }
+      // Note: Backend doesn't have profile update endpoint yet
+      // This would need to be implemented in the backend first
+      throw new Error('Funcionalidad no implementada en el backend')
     } catch (error) {
       throw new Error('Error al actualizar el perfil')
     }
   }
 
   /**
-   * Validate authentication token
+   * Validate authentication token by checking with backend
    */
   async validateToken() {
     try {
-      if (!this.currentUser || !this.currentUser.token) {
+      if (!this.getAccessToken()) {
         return false
       }
 
-      // Simulate token validation
-      // In a real app, this would validate against the backend
+      // Try to get user info to validate token
+      await this.getUserInfo()
       return true
     } catch (error) {
       console.error('Token validation error:', error)
       return false
     }
+  }
+
+  /**
+   * Get user role for dashboard redirection
+   */
+  getUserRole() {
+    if (!this.currentUser || !this.currentUser.roles || this.currentUser.roles.length === 0) {
+      return null
+    }
+    // Return the first role (as per user preference for single role handling)
+    return this.currentUser.roles[0].toLowerCase()
+  }
+
+  /**
+   * Get dashboard route based on user role
+   * Now returns unified /dashboard route for all roles
+   */
+  getDashboardRoute() {
+    return '/dashboard'
   }
 }
 

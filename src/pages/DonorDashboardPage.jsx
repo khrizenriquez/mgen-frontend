@@ -2,29 +2,25 @@
  * Donor Dashboard Page
  * Specialized dashboard for registered donors
  */
+import { useState, useEffect } from 'react'
 import { Card, Row, Col, Button, Badge, ProgressBar, ListGroup } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import DashboardLayout from '../components/layout/DashboardLayout'
+import api from '../core/services/api.js'
 
 export default function DonorDashboardPage() {
-  // Mock data - will be replaced with real API calls
-  const donorStats = {
-    totalDonations: 28,
-    totalAmount: 8750.00,
-    monthlyAverage: 625.00,
-    favoriteProgram: 'Evangelización Infantil',
-    impactChildren: 45,
-    memberSince: '2023-03-10',
-    donationStreak: 12,
-    nextReward: 'Donante Platino'
-  }
-
-  const myDonations = [
-    { id: 'DON-001', amount: 500.00, program: 'Evangelización Infantil', date: '2024-01-15', status: 'completed', receipt: true },
-    { id: 'DON-002', amount: 250.00, program: 'Programa de Alimentación', date: '2024-01-10', status: 'completed', receipt: true },
-    { id: 'DON-003', amount: 750.00, program: 'Becas Escolares', date: '2024-01-05', status: 'completed', receipt: true },
-    { id: 'DON-004', amount: 300.00, program: 'Evangelización Infantil', date: '2023-12-20', status: 'completed', receipt: true },
-  ]
+  const [donorStats, setDonorStats] = useState({
+    totalDonations: 0,
+    totalAmount: 0,
+    monthlyAverage: 0,
+    favoriteProgram: null,
+    impactChildren: 0,
+    memberSince: new Date(),
+    donationStreak: 0,
+    nextReward: 'Donante Oro'
+  })
+  const [myDonations, setMyDonations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const impactMetrics = [
     { label: 'Niños beneficiados', value: donorStats.impactChildren, icon: 'bi-people', color: 'success' },
@@ -39,6 +35,63 @@ export default function DonorDashboardPage() {
     { id: 3, name: 'Alimentación Escolar', description: 'Nutrición para el aprendizaje', progress: 80, goal: 12000.00, current: 9600.00 },
   ]
 
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Load dashboard stats
+        const statsResponse = await api.get('/dashboard/stats')
+        const dashboardData = statsResponse.data
+
+        setDonorStats({
+          totalDonations: dashboardData.stats.total_donations || 0,
+          totalAmount: dashboardData.stats.total_amount_gtq || 0,
+          monthlyAverage: dashboardData.stats.monthly_average || 0,
+          favoriteProgram: dashboardData.stats.favorite_program || 'Programa General',
+          impactChildren: 45, // This could come from a separate API
+          memberSince: new Date(dashboardData.stats.member_since || new Date()),
+          donationStreak: dashboardData.stats.donation_streak || 0,
+          nextReward: 'Donante Platino'
+        })
+
+        // Load user's donations
+        setMyDonations(dashboardData.stats.my_donations || [])
+
+      } catch (err) {
+        console.error('Error loading donor dashboard data:', err)
+        setError('Error al cargar los datos del dashboard')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDashboardData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <div className="text-center">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-2 text-muted">Cargando tu dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        <i className="bi bi-exclamation-triangle me-2"></i>
+        {error}
+      </div>
+    )
+  }
+
   const getStatusBadge = (status) => {
     const variants = {
       completed: 'success',
@@ -49,8 +102,7 @@ export default function DonorDashboardPage() {
   }
 
   return (
-    <DashboardLayout userRole="DONOR" userName="María González">
-      <div className="donor-dashboard">
+    <div className="donor-dashboard">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
@@ -169,7 +221,7 @@ export default function DonorDashboardPage() {
               </Card.Header>
               <Card.Body className="p-0">
                 <ListGroup variant="flush">
-                  {myDonations.map((donation) => (
+                  {myDonations.length > 0 ? myDonations.map((donation) => (
                     <ListGroup.Item key={donation.id} className="px-4 py-3">
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center">
@@ -178,24 +230,29 @@ export default function DonorDashboardPage() {
                             <i className="bi bi-check-circle-fill text-success"></i>
                           </div>
                           <div>
-                            <h6 className="mb-1">{donation.program}</h6>
+                            <h6 className="mb-1">Donación #{donation.id.substring(0, 8)}...</h6>
                             <p className="text-muted small mb-1">
-                              {donation.id} • {new Date(donation.date).toLocaleDateString('es-GT')}
-                              {donation.receipt && (
-                                <span className="ms-2">
-                                  <i className="bi bi-receipt text-info"></i> Recibo disponible
-                                </span>
-                              )}
+                              {donation.donor_email} • {new Date(donation.created_at).toLocaleDateString('es-GT')}
+                              <span className="ms-2">
+                                <i className="bi bi-receipt text-info"></i> Recibo disponible
+                              </span>
                             </p>
                           </div>
                         </div>
                         <div className="text-end">
-                          <div className="fw-bold text-success mb-1">Q{donation.amount.toLocaleString()}</div>
-                          {getStatusBadge(donation.status)}
+                          <div className="fw-bold text-success mb-1">Q{donation.amount_gtq.toLocaleString()}</div>
+                          <Badge bg={donation.status === 'APPROVED' ? 'success' : 'warning'}>
+                            {donation.status === 'APPROVED' ? 'Aprobado' : donation.status}
+                          </Badge>
                         </div>
                       </div>
                     </ListGroup.Item>
-                  ))}
+                  )) : (
+                    <ListGroup.Item className="px-4 py-3 text-center text-muted">
+                      <i className="bi bi-info-circle me-2"></i>
+                      Aún no has realizado donaciones
+                    </ListGroup.Item>
+                  )}
                 </ListGroup>
               </Card.Body>
             </Card>
@@ -258,6 +315,5 @@ export default function DonorDashboardPage() {
           </Col>
         </Row>
       </div>
-    </DashboardLayout>
   )
 }

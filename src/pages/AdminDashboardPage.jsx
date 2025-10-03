@@ -2,36 +2,58 @@
  * Admin Dashboard Page
  * Comprehensive dashboard for system administrators
  */
+import { useState, useEffect } from 'react'
 import { Card, Row, Col, Button, Badge, Table, ProgressBar } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import DashboardLayout from '../components/layout/DashboardLayout'
+import api from '../core/services/api.js'
 
 export default function AdminDashboardPage() {
-  // Mock data - will be replaced with real API calls
-  const stats = {
-    totalUsers: 1247,
-    activeUsers: 892,
-    totalDonations: 3456,
-    totalAmount: 125430.50,
-    pendingDonations: 23,
-    systemHealth: 98
-  }
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalDonations: 0,
+    totalAmount: 0,
+    pendingDonations: 0,
+    systemHealth: 100
+  })
+  const [recentUsers, setRecentUsers] = useState([])
+  const [recentDonations, setRecentDonations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const recentUsers = [
-    { id: 1, name: 'María González', email: 'maria@example.com', role: 'DONOR', joinedAt: '2024-01-15', status: 'active' },
-    { id: 2, name: 'Carlos Rodríguez', email: 'carlos@example.com', role: 'USER', joinedAt: '2024-01-14', status: 'active' },
-    { id: 3, name: 'Ana López', email: 'ana@example.com', role: 'DONOR', joinedAt: '2024-01-13', status: 'pending' },
-    { id: 4, name: 'José Martínez', email: 'jose@example.com', role: 'USER', joinedAt: '2024-01-12', status: 'active' },
-    { id: 5, name: 'Laura Sánchez', email: 'laura@example.com', role: 'DONOR', joinedAt: '2024-01-11', status: 'active' },
-  ]
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
 
-  const recentDonations = [
-    { id: 'DON-001', amount: 250.00, donor: 'María González', status: 'approved', date: '2024-01-15' },
-    { id: 'DON-002', amount: 500.00, donor: 'Carlos Rodríguez', status: 'pending', date: '2024-01-14' },
-    { id: 'DON-003', amount: 100.00, donor: 'Ana López', status: 'approved', date: '2024-01-13' },
-    { id: 'DON-004', amount: 750.00, donor: 'José Martínez', status: 'approved', date: '2024-01-12' },
-    { id: 'DON-005', amount: 300.00, donor: 'Laura Sánchez', status: 'pending', date: '2024-01-11' },
-  ]
+        // Load dashboard stats
+        const statsResponse = await api.get('/dashboard/stats')
+        const dashboardData = statsResponse.data
+
+        setStats({
+          totalUsers: dashboardData.stats.total_users || 0,
+          activeUsers: dashboardData.stats.active_users || 0,
+          totalDonations: dashboardData.stats.total_donations || 0,
+          totalAmount: dashboardData.stats.total_amount_gtq || 0,
+          pendingDonations: dashboardData.stats.pending_donations || 0,
+          systemHealth: 98 // This could come from a health check API
+        })
+
+        // Load recent users and donations (already included in dashboard stats for admin)
+        setRecentUsers(dashboardData.stats.recent_users || [])
+        setRecentDonations(dashboardData.stats.recent_donations || [])
+
+      } catch (err) {
+        console.error('Error loading dashboard data:', err)
+        setError('Error al cargar los datos del dashboard')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDashboardData()
+  }, [])
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -39,9 +61,24 @@ export default function AdminDashboardPage() {
       pending: 'warning',
       inactive: 'secondary',
       approved: 'success',
-      declined: 'danger'
+      declined: 'danger',
+      APPROVED: 'success',
+      PENDING: 'warning',
+      DECLINED: 'danger',
+      EXPIRED: 'secondary'
     }
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>
+    const displayText = {
+      active: 'Activo',
+      pending: 'Pendiente',
+      inactive: 'Inactivo',
+      approved: 'Aprobado',
+      declined: 'Rechazado',
+      APPROVED: 'Aprobado',
+      PENDING: 'Pendiente',
+      DECLINED: 'Rechazado',
+      EXPIRED: 'Expirado'
+    }
+    return <Badge bg={variants[status] || 'secondary'}>{displayText[status] || status}</Badge>
   }
 
   const getRoleBadge = (role) => {
@@ -50,12 +87,38 @@ export default function AdminDashboardPage() {
       USER: 'primary',
       DONOR: 'success'
     }
-    return <Badge bg={variants[role] || 'secondary'}>{role}</Badge>
+    const displayText = {
+      ADMIN: 'Admin',
+      USER: 'Usuario',
+      DONOR: 'Donante'
+    }
+    return <Badge bg={variants[role] || 'secondary'}>{displayText[role] || role}</Badge>
+  }
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-2 text-muted">Cargando dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        <i className="bi bi-exclamation-triangle me-2"></i>
+        {error}
+      </div>
+    )
   }
 
   return (
-    <DashboardLayout userRole="ADMIN" userName="Admin User">
-      <div className="admin-dashboard">
+    <div className="admin-dashboard">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
@@ -208,18 +271,18 @@ export default function AdminDashboardPage() {
                               <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2"
                                    style={{width: '32px', height: '32px'}}>
                                 <span className="text-primary fw-medium small">
-                                  {user.name.split(' ').map(n => n[0]).join('')}
+                                  {user.email.substring(0, 2).toUpperCase()}
                                 </span>
                               </div>
                               <div>
-                                <div className="fw-medium small">{user.name}</div>
-                                <div className="text-muted small">{user.email}</div>
+                                <div className="fw-medium small">{user.email}</div>
+                                <div className="text-muted small">ID: {user.id.substring(0, 8)}...</div>
                               </div>
                             </div>
                           </td>
-                          <td>{getRoleBadge(user.role)}</td>
+                          <td>{user.roles && user.roles.length > 0 ? getRoleBadge(user.roles[0]) : getRoleBadge('USER')}</td>
                           <td>{getStatusBadge(user.status)}</td>
-                          <td className="text-muted small">{user.joinedAt}</td>
+                          <td className="text-muted small">{new Date(user.joined_at).toLocaleDateString('es-GT')}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -252,9 +315,9 @@ export default function AdminDashboardPage() {
                     <tbody>
                       {recentDonations.map((donation) => (
                         <tr key={donation.id}>
-                          <td className="text-muted small">{donation.id}</td>
-                          <td className="fw-medium small">{donation.donor}</td>
-                          <td className="fw-bold text-success">Q{donation.amount.toLocaleString()}</td>
+                          <td className="text-muted small">{donation.id.substring(0, 12)}...</td>
+                          <td className="fw-medium small">{donation.donor_name || donation.donor_email}</td>
+                          <td className="fw-bold text-success">Q{donation.amount_gtq.toLocaleString()}</td>
                           <td>{getStatusBadge(donation.status)}</td>
                         </tr>
                       ))}
@@ -266,6 +329,5 @@ export default function AdminDashboardPage() {
           </Col>
         </Row>
       </div>
-    </DashboardLayout>
   )
 }

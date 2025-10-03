@@ -6,8 +6,11 @@ import { Suspense } from 'react'
 import './i18n' // Initialize i18next
 
 import Layout from './components/layout/Layout'
+import AuthLayout from './components/layout/AuthLayout'
+import DashboardLayout from './components/layout/DashboardLayout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ErrorBoundary from './components/ui/ErrorBoundary'
+import ProtectedRoute from './components/ui/ProtectedRoute'
 
 // Direct imports for better debugging
 import HomePage from './pages/HomePage'
@@ -28,25 +31,55 @@ import NotFoundPage from './pages/NotFoundPage'
 function App() {
   return (
     <ErrorBoundary>
-      <Layout>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/donations" element={<DonationsPage />} />
-            <Route path="/donations/:id" element={<DonationDetailPage />} />
-            <Route path="/donate" element={<DonatePage />} />
-            <Route path="/stats" element={<StatsPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-            <Route path="/user-dashboard" element={<UserDashboardPage />} />
-            <Route path="/donor-dashboard" element={<DonorDashboardPage />} />
-            <Route path="/donor/profile" element={<DonorProfilePage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </Layout>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {/* Public routes with main layout */}
+          <Route path="/" element={
+            <Layout>
+              <HomePage />
+            </Layout>
+          } />
+          <Route path="/donations" element={
+            <Layout>
+              <DonationsPage />
+            </Layout>
+          } />
+          <Route path="/donations/:id" element={
+            <Layout>
+              <DonationDetailPage />
+            </Layout>
+          } />
+          <Route path="/donate" element={
+            <Layout>
+              <DonatePage />
+            </Layout>
+          } />
+          <Route path="/stats" element={
+            <Layout>
+              <StatsPage />
+            </Layout>
+          } />
+
+          {/* Authentication routes with auth layout */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* Unified dashboard route - content changes based on user role */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          } />
+
+          {/* 404 route */}
+          <Route path="*" element={
+            <Layout>
+              <NotFoundPage />
+            </Layout>
+          } />
+        </Routes>
+      </Suspense>
     </ErrorBoundary>
   )
 }

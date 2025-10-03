@@ -7,7 +7,6 @@ import { Card, Row, Col, Button, Form, Alert, Tab, Tabs, Badge } from 'react-boo
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import DashboardLayout from '../components/layout/DashboardLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import AuthService from '../core/services/AuthService'
 
@@ -163,8 +162,7 @@ export default function DonorProfilePage() {
   }
 
   return (
-    <DashboardLayout userRole="DONOR" userName="María González">
-      <div className="donor-profile">
+    <div className="donor-profile">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
@@ -505,6 +503,5 @@ export default function DonorProfilePage() {
           </Tab>
         </Tabs>
       </div>
-    </DashboardLayout>
   )
 }

@@ -3,13 +3,33 @@
  * Provides navigation and structure for role-based dashboards
  */
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Navbar, Nav, Container, Button, Offcanvas } from 'react-bootstrap'
+import AuthService from '../../core/services/AuthService'
 
-export default function DashboardLayout({ children, userRole, userName }) {
+// Import dashboard components
+import AdminDashboardPage from '../../pages/AdminDashboardPage'
+import UserDashboardPage from '../../pages/UserDashboardPage'
+import DonorDashboardPage from '../../pages/DonorDashboardPage'
+
+export default function DashboardLayout({ children }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // Get current user info
+    const user = AuthService.getCurrentUser()
+    setCurrentUser(user)
+
+    // Subscribe to auth changes
+    const unsubscribe = AuthService.subscribe((user) => {
+      setCurrentUser(user)
+    })
+
+    return unsubscribe
+  }, [])
 
   // Navigation items based on role
   const getNavigationItems = (role) => {
@@ -48,10 +68,29 @@ export default function DashboardLayout({ children, userRole, userName }) {
     }
   }
 
+  const userRole = currentUser?.roles?.[0] || 'USER'
+  const userName = currentUser?.email || 'Usuario'
   const navigationItems = getNavigationItems(userRole)
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
+  // Render the appropriate dashboard component based on role
+  const renderDashboardContent = () => {
+    switch (userRole) {
+      case 'ADMIN':
+        return <AdminDashboardPage />
+      case 'DONOR':
+        return <DonorDashboardPage />
+      case 'USER':
+      default:
+        return <UserDashboardPage />
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout()
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
     navigate('/login')
   }
 
@@ -210,7 +249,7 @@ export default function DashboardLayout({ children, userRole, userName }) {
       {/* Main Content */}
       <main className="flex-grow-1 py-4">
         <Container fluid>
-          {children}
+          {renderDashboardContent()}
         </Container>
       </main>
     </div>

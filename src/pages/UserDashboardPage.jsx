@@ -2,27 +2,23 @@
  * User Dashboard Page
  * Dashboard for regular authenticated users
  */
+import { useState, useEffect } from 'react'
 import { Card, Row, Col, Button, Badge, ProgressBar } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import DashboardLayout from '../components/layout/DashboardLayout'
+import api from '../core/services/api.js'
 
 export default function UserDashboardPage() {
-  // Mock data - will be replaced with real API calls
-  const userStats = {
-    totalDonations: 12,
-    totalAmount: 2850.00,
-    favoriteCause: 'Evangelización Infantil',
-    memberSince: '2023-06-15',
+  const [userStats, setUserStats] = useState({
+    totalDonations: 0,
+    totalAmount: 0,
+    favoriteCause: 'Programa General',
+    memberSince: new Date(),
     nextMilestone: 3000.00,
-    currentProgress: 2850.00
-  }
-
-  const recentActivity = [
-    { id: 1, type: 'donation', title: 'Donación realizada', amount: 'Q250.00', date: '2024-01-15', status: 'completed' },
-    { id: 2, type: 'view', title: 'Vio estadísticas', description: 'Consultó reportes mensuales', date: '2024-01-14', status: 'completed' },
-    { id: 3, type: 'donation', title: 'Donación realizada', amount: 'Q500.00', date: '2024-01-10', status: 'completed' },
-    { id: 4, type: 'view', title: 'Vio donaciones', description: 'Revisó lista de donaciones activas', date: '2024-01-08', status: 'completed' },
-  ]
+    currentProgress: 0
+  })
+  const [recentActivity, setRecentActivity] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const upcomingEvents = [
     { id: 1, title: 'Campaña de Navidad', date: '2024-12-01', type: 'campaign', description: 'Ayuda a los niños en Navidad' },
@@ -30,11 +26,45 @@ export default function UserDashboardPage() {
     { id: 3, title: 'Programa de Becas', date: '2024-03-15', type: 'program', description: 'Apoyo educativo continuo' },
   ]
 
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Load dashboard stats
+        const statsResponse = await api.get('/dashboard/stats')
+        const dashboardData = statsResponse.data
+
+        setUserStats({
+          totalDonations: dashboardData.stats.total_donations || 0,
+          totalAmount: dashboardData.stats.total_amount_gtq || 0,
+          favoriteCause: 'Programa General',
+          memberSince: new Date(dashboardData.stats.member_since || new Date()),
+          nextMilestone: 3000.00, // This could be configurable
+          currentProgress: dashboardData.stats.total_amount_gtq || 0
+        })
+
+        // Set recent activity
+        setRecentActivity(dashboardData.recent_activity || [])
+
+      } catch (err) {
+        console.error('Error loading user dashboard data:', err)
+        setError('Error al cargar los datos del dashboard')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDashboardData()
+  }, [])
+
   const getActivityIcon = (type) => {
     const icons = {
       donation: 'bi-heart-fill text-success',
       view: 'bi-eye text-info',
-      profile: 'bi-person text-primary'
+      profile: 'bi-person text-primary',
+      system_donation: 'bi-heart-fill text-success'
     }
     return icons[type] || 'bi-circle text-muted'
   }
@@ -50,9 +80,30 @@ export default function UserDashboardPage() {
 
   const progressPercentage = (userStats.currentProgress / userStats.nextMilestone) * 100
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-2 text-muted">Cargando dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        <i className="bi bi-exclamation-triangle me-2"></i>
+        {error}
+      </div>
+    )
+  }
+
   return (
-    <DashboardLayout userRole="USER" userName="Juan Pérez">
-      <div className="user-dashboard">
+    <div className="user-dashboard">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
@@ -157,8 +208,8 @@ export default function UserDashboardPage() {
               </Card.Header>
               <Card.Body>
                 <div className="activity-timeline">
-                  {recentActivity.map((activity, index) => (
-                    <div key={activity.id} className={`d-flex mb-4 ${index === recentActivity.length - 1 ? '' : 'pb-3 border-bottom'}`}>
+                  {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
+                    <div key={index} className={`d-flex mb-4 ${index === recentActivity.length - 1 ? '' : 'pb-3 border-bottom'}`}>
                       <div className="flex-shrink-0 me-3">
                         <div className="bg-light rounded-circle d-flex align-items-center justify-content-center"
                              style={{width: '40px', height: '40px'}}>
@@ -168,19 +219,21 @@ export default function UserDashboardPage() {
                       <div className="flex-grow-1">
                         <div className="d-flex justify-content-between align-items-start">
                           <div>
-                            <h6 className="mb-1">{activity.title}</h6>
-                            {activity.amount && (
-                              <p className="text-success fw-medium mb-1">{activity.amount}</p>
-                            )}
-                            {activity.description && (
-                              <p className="text-muted small mb-1">{activity.description}</p>
-                            )}
+                            <h6 className="mb-1">{activity.message}</h6>
+                            <p className="text-muted small mb-1">Actividad del sistema</p>
                           </div>
-                          <small className="text-muted">{activity.date}</small>
+                          <small className="text-muted">
+                            {activity.timestamp ? new Date(activity.timestamp).toLocaleDateString('es-GT') : 'Reciente'}
+                          </small>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="text-center text-muted py-4">
+                      <i className="bi bi-info-circle fs-2 mb-2"></i>
+                      <p>No hay actividad reciente</p>
+                    </div>
+                  )}
                 </div>
               </Card.Body>
             </Card>
@@ -234,6 +287,5 @@ export default function UserDashboardPage() {
           </Col>
         </Row>
       </div>
-    </DashboardLayout>
   )
 }

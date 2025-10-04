@@ -110,7 +110,7 @@ export default function DonorDashboardPage() {
             <p className="text-muted mb-0">Gracias por tu generosidad, María. Tu impacto es invaluable.</p>
           </div>
           <div className="d-flex gap-2">
-            <Button variant="outline-success" as={Link} to="/donor/donations">
+            <Button variant="outline-success" as={Link} to="/donate">
               <i className="bi bi-plus-circle me-1"></i>
               Nueva Donación
             </Button>
@@ -215,7 +215,7 @@ export default function DonorDashboardPage() {
             <Card>
               <Card.Header className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Mis Donaciones Recientes</h5>
-                <Button variant="link" size="sm" as={Link} to="/donor/donations">
+                <Button variant="link" size="sm" as={Link} to="/donations">
                   Ver todas <i className="bi bi-arrow-right"></i>
                 </Button>
               </Card.Header>

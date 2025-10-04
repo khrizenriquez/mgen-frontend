@@ -202,7 +202,7 @@ export default function UserDashboardPage() {
             <Card className="h-100">
               <Card.Header className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Actividad Reciente</h5>
-                <Button variant="link" size="sm" as={Link} to="/user/history">
+                <Button variant="link" size="sm" as={Link} to="/donations">
                   Ver todo <i className="bi bi-arrow-right"></i>
                 </Button>
               </Card.Header>

@@ -20,6 +20,9 @@ cd mgen-frontend
 docker build -t donations-frontend .
 docker run -d -p 80:80 --name donations-app donations-frontend
 
+# Para reconstruir y reiniciar (después de cambios)
+docker build -t donations-frontend . && docker stop donations-app && docker rm donations-app && docker run -d -p 80:80 --name donations-app donations-frontend
+
 # O usando docker-compose
 docker-compose up -d
 
@@ -57,6 +60,13 @@ Una vez levantado el backend, el frontend se conectará a:
 - **Backend API**: http://localhost:8000/api/v1
 - **API Documentation**: http://localhost:8000/docs
 - **Health Check**: http://localhost:8000/health
+
+### Modo Desarrollo con Mock Data
+
+Si el backend no está disponible, el frontend automáticamente usa **datos mock** para desarrollo:
+- **Login**: Funciona con cualquier email (admin@, donor@, user@)
+- **Dashboard**: Carga con estadísticas de ejemplo
+- **Fallback automático**: Sin configuración adicional necesaria
 
 ## 🛠️ Scripts Disponibles
 

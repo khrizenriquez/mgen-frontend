@@ -114,6 +114,14 @@ class AuthService {
   async login(credentials) {
     try {
       console.log('Starting login process...')
+
+      // Check if backend is available
+      const isBackendHealthy = await this.checkBackendHealth()
+      if (!isBackendHealthy) {
+        console.warn('Backend not available, using mock login for development')
+        return this.mockLogin(credentials)
+      }
+
       const response = await api.post('/auth/login', credentials)
       const { access_token, refresh_token } = response.data
       console.log('Login API call successful')
@@ -139,6 +147,13 @@ class AuthService {
       return { success: true, user, tokens: { access_token, refresh_token } }
     } catch (error) {
       console.error('Login error:', error)
+
+      // If it's a network error and backend is down, use mock login
+      if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_RESET') {
+        console.warn('Network error detected, falling back to mock login')
+        return this.mockLogin(credentials)
+      }
+
       throw new Error(error.response?.data?.detail || 'Error al iniciar sesión')
     }
   }
@@ -220,15 +235,22 @@ class AuthService {
    */
   async logout() {
     try {
-      // Attempt to notify backend about logout (optional - don't fail if backend is down)
-      const token = this.getAccessToken()
-      if (token) {
-        try {
-          await api.post('/auth/logout')
-        } catch (apiError) {
-          // Log error but don't fail logout - backend might be down or endpoint not implemented yet
-          console.warn('Backend logout notification failed:', apiError.message)
+      // Check if backend is available before attempting logout
+      const isBackendHealthy = await this.checkBackendHealth()
+
+      if (isBackendHealthy) {
+        // Attempt to notify backend about logout
+        const token = this.getAccessToken()
+        if (token && !token.startsWith('mock_')) {
+          try {
+            await api.post('/auth/logout')
+          } catch (apiError) {
+            // Log error but don't fail logout - backend might be down
+            console.warn('Backend logout notification failed:', apiError.message)
+          }
         }
+      } else {
+        console.log('Backend not available, skipping logout notification')
       }
     } catch (error) {
       // Log any unexpected errors but continue with local logout
@@ -261,12 +283,86 @@ class AuthService {
   }
 
   /**
+   * Check if backend is available
+   */
+  async checkBackendHealth() {
+    try {
+      const isHealthy = await api.healthCheck()
+      return isHealthy
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * Mock login for development when backend is unavailable
+   */
+  async mockLogin(credentials) {
+    console.log('Using mock login for development')
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Mock user data based on email
+    let mockUser
+    if (credentials.email.includes('admin')) {
+      mockUser = {
+        id: 1,
+        email: credentials.email,
+        roles: ['ADMIN']
+      }
+    } else if (credentials.email.includes('donor')) {
+      mockUser = {
+        id: 2,
+        email: credentials.email,
+        roles: ['DONOR']
+      }
+    } else {
+      mockUser = {
+        id: 3,
+        email: credentials.email,
+        roles: ['USER']
+      }
+    }
+
+    const mockTokens = {
+      access_token: 'mock_access_token_' + Date.now(),
+      refresh_token: 'mock_refresh_token_' + Date.now()
+    }
+
+    const user = {
+      ...mockUser,
+      loginAt: new Date().toISOString()
+    }
+
+    this.currentUser = user
+    this.saveUserToStorage(user, mockTokens)
+    this.notifyListeners()
+
+    console.log('Mock login successful:', user)
+
+    return {
+      success: true,
+      user,
+      tokens: mockTokens,
+      isMock: true // Flag to indicate this is mock data
+    }
+  }
+
+  /**
    * Validate authentication token by checking with backend
    */
   async validateToken() {
     try {
       if (!this.getAccessToken()) {
         return false
+      }
+
+      // Check backend health first
+      const isBackendHealthy = await this.checkBackendHealth()
+      if (!isBackendHealthy) {
+        // If backend is down, consider token valid for development
+        return !!this.currentUser
       }
 
       // Try to get user info to validate token

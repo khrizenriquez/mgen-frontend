@@ -25,7 +25,7 @@
     "react-query": "^3.39.3",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
-    "bootstrap": "^5.3.2",
+    "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.11.2",
     "react-bootstrap": "^2.9.1"
   },

@@ -44,13 +44,13 @@ export default function Layout({ children }) {
   const navigation = isAuthenticated ? authenticatedNavigation : baseNavigation
 
   return (
-    <div className="min-vh-100 bg-light d-flex flex-column">
+    <div className="min-vh-100 bg-light d-flex flex-column" data-testid="main-layout">
       {/* Navigation */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom" data-testid="navbar">
         <div className="container-fluid">
           {/* Logo and brand */}
-          <Link to="/" className="navbar-brand d-flex align-items-center">
-            <i className="bi bi-heart-fill text-danger me-2" style={{fontSize: '1.5rem'}}></i>
+          <Link to="/" className="navbar-brand d-flex align-items-center" data-testid="navbar-brand">
+            <i className="bi bi-heart-fill text-danger me-2" style={{fontSize: '1.5rem'}} data-testid="navbar-logo"></i>
             <span className="fw-semibold">{t('common.brand.name')}</span>
           </Link>
 
@@ -58,6 +58,7 @@ export default function Layout({ children }) {
           <button
             className="navbar-toggler"
             type="button"
+            data-testid="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-controls="navbarNav"
             aria-expanded={mobileMenuOpen}
@@ -67,14 +68,19 @@ export default function Layout({ children }) {
           </button>
 
           {/* Desktop navigation */}
-          <div className={`collapse navbar-collapse ${mobileMenuOpen ? 'show' : ''}`} id="navbarNav">
+          <div className={`collapse navbar-collapse ${mobileMenuOpen ? 'show' : ''}`} id="navbarNav" data-testid="navbar-collapse">
             <ul className="navbar-nav ms-auto">
               {navigation.map((item) => {
                 const isActive = location.pathname === item.href
+                const testId = item.href === '/' ? 'nav-link-inicio' :
+                               item.href === '/donations' ? 'nav-link-donaciones' :
+                               item.href === '/donate' ? 'nav-link-donar' :
+                               item.href === '/stats' ? 'nav-link-estadísticas' : 'nav-link'
                 return (
                   <li className="nav-item" key={item.name}>
                     <Link
                       to={item.href}
+                      data-testid={testId}
                       className={`nav-link d-flex align-items-center ${
                         isActive ? 'active text-primary fw-medium' : 'text-dark'
                       }`}
@@ -95,27 +101,27 @@ export default function Layout({ children }) {
               // Authenticated user - show dashboard link and user info
               <>
                 {/* Mobile: Show compact user info */}
-                <div className="d-flex d-md-none align-items-center me-2">
-                  <span className="badge bg-primary text-white">
+                <div className="d-flex d-md-none align-items-center me-2" data-testid="mobile-user-info">
+                  <span className="badge bg-primary text-white" data-testid="mobile-user-role">
                     {currentUser?.roles?.[0] || 'USER'}
                   </span>
                 </div>
                 {/* Desktop: Show full user info */}
-                <div className="d-none d-md-flex align-items-center me-3">
+                <div className="d-none d-md-flex align-items-center me-3" data-testid="desktop-user-info">
                   <span className="text-muted small me-2">Bienvenido,</span>
                   <span className="fw-medium me-2">{currentUser?.email || 'Usuario'}</span>
                   <span className="badge bg-primary text-white">
                     {currentUser?.roles?.[0] || 'USER'}
                   </span>
                 </div>
-                <Link to="/dashboard" className="btn btn-outline-primary btn-sm">
+                <Link to="/dashboard" className="btn btn-outline-primary btn-sm" data-testid="dashboard-link">
                   <i className="bi bi-speedometer2 me-1"></i>
                   <span className="d-none d-sm-inline">Dashboard</span>
                 </Link>
               </>
             ) : (
               // Unauthenticated user - show login link
-              <Link to="/login" className="btn btn-outline-primary btn-sm">
+              <Link to="/login" className="btn btn-outline-primary btn-sm" data-testid="login-link">
                 <i className="bi bi-person-circle me-1"></i>
                 <span className="d-none d-sm-inline">Iniciar Sesión</span>
               </Link>
@@ -125,7 +131,7 @@ export default function Layout({ children }) {
       </nav>
 
       {/* Main content */}
-      <main className="container-fluid py-4 flex-grow-1">
+      <main className="container-fluid py-4 flex-grow-1" data-testid="main-content">
         <div className="container">
           {children}
         </div>
@@ -136,12 +142,12 @@ export default function Layout({ children }) {
         <div className="container">
           <div className="row">
             <div className="col-12 col-md-6 text-center text-md-start">
-              <div className="text-muted small">
+              <div className="text-muted small" data-testid="footer-copyright">
                 {t('common.footer.copyright', { year: new Date().getFullYear() })}
               </div>
             </div>
             <div className="col-12 col-md-6 text-center text-md-end">
-              <div className="text-muted small">
+              <div className="text-muted small" data-testid="footer-version">
                 {t('common.footer.version')} {import.meta.env.VITE_APP_VERSION || '1.0.0'}
               </div>
             </div>

@@ -394,5 +394,6 @@ class AuthService {
   }
 }
 
-// Export singleton instance
+// Export class and singleton instance
+export { AuthService }
 export default new AuthService()

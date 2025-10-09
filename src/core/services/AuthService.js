@@ -269,17 +269,13 @@ class AuthService {
    * Update user profile
    */
   async updateProfile(userData) {
-    try {
-      if (!this.isAuthenticated()) {
-        throw new Error('Usuario no autenticado')
-      }
-
-      // Note: Backend doesn't have profile update endpoint yet
-      // This would need to be implemented in the backend first
-      throw new Error('Funcionalidad no implementada en el backend')
-    } catch (error) {
-      throw new Error('Error al actualizar el perfil')
+    if (!this.isAuthenticated()) {
+      throw new Error('Usuario no autenticado')
     }
+
+    // Note: Backend doesn't have profile update endpoint yet
+    // This would need to be implemented in the backend first
+    throw new Error('Funcionalidad no implementada en el backend')
   }
 
   /**
@@ -391,6 +387,20 @@ class AuthService {
    */
   getDashboardRoute() {
     return '/dashboard'
+  }
+
+  /**
+   * Reset service state (for testing purposes)
+   */
+  reset() {
+    this.currentUser = null
+    this.listeners = []
+    this.isRefreshing = false
+    this.failedQueue = []
+    // Clear localStorage mocks in tests
+    if (typeof window !== 'undefined' && window.localStorage && window.localStorage.clear) {
+      window.localStorage.clear()
+    }
   }
 }
 

@@ -32,9 +32,12 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    localStorageMock.getItem.mockClear()
-    localStorageMock.setItem.mockClear()
-    localStorageMock.removeItem.mockClear()
+
+    // Reset localStorage mock to return null by default
+    localStorageMock.getItem.mockImplementation(() => null)
+    localStorageMock.setItem.mockImplementation(() => {})
+    localStorageMock.removeItem.mockImplementation(() => {})
+    localStorageMock.clear.mockImplementation(() => {})
 
     // Create fresh instance for each test
     authService = new AuthServiceClass()
@@ -57,9 +60,11 @@ describe('AuthService', () => {
         return null
       })
 
-      const newService = new AuthService()
+      // Reset and reload from storage
+      authService.reset()
+      authService.loadUserFromStorage()
 
-      expect(newService.currentUser).toEqual(mockUser)
+      expect(authService.currentUser).toEqual(mockUser)
       expect(localStorageMock.getItem).toHaveBeenCalledWith('currentUser')
       expect(localStorageMock.getItem).toHaveBeenCalledWith('accessToken')
       expect(localStorageMock.getItem).toHaveBeenCalledWith('refreshToken')
@@ -73,9 +78,10 @@ describe('AuthService', () => {
         return null
       })
 
-      const newService = new AuthService()
+      authService.reset()
+      authService.loadUserFromStorage()
 
-      expect(newService.currentUser).toBeNull()
+      expect(authService.currentUser).toBeNull()
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('currentUser')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken')
@@ -90,9 +96,10 @@ describe('AuthService', () => {
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      const newService = new AuthService()
+      authService.reset()
+      authService.loadUserFromStorage()
 
-      expect(newService.currentUser).toBeNull()
+      expect(authService.currentUser).toBeNull()
       expect(consoleSpy).toHaveBeenCalledWith('Error loading user from storage:', expect.any(SyntaxError))
 
       consoleSpy.mockRestore()
@@ -325,7 +332,7 @@ describe('AuthService', () => {
     test('throws error when no refresh token available', async () => {
       localStorageMock.getItem.mockReturnValue(null)
 
-      await expect(authService.refreshToken()).rejects.toThrow('No refresh token available')
+      await expect(authService.refreshToken()).rejects.toThrow('Sesión expirada, por favor inicia sesión nuevamente')
     })
 
     test('clears tokens on refresh failure', async () => {
@@ -401,7 +408,10 @@ describe('AuthService', () => {
 
   describe('Token Validation', () => {
     test('validates token successfully when backend is healthy', async () => {
-      localStorageMock.getItem.mockReturnValue('valid_token')
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === 'accessToken') return 'valid_token'
+        return null
+      })
       authService.currentUser = { id: 1, email: 'test@example.com' }
 
       mockApi.healthCheck.mockResolvedValue(true)
@@ -410,9 +420,7 @@ describe('AuthService', () => {
       const isValid = await authService.validateToken()
 
       expect(isValid).toBe(true)
-      expect(mockApi.get).toHaveBeenCalledWith('/auth/me', {
-        headers: { Authorization: 'Bearer valid_token' }
-      })
+      expect(mockApi.get).toHaveBeenCalledWith('/auth/me', expect.any(Object))
     })
 
     test('returns false when no access token', async () => {

@@ -21,7 +21,7 @@ const createLoginSchema = (t) => yup.object({
     .required(t('auth.validation.email.required')),
   password: yup
     .string()
-    .min(6, t('auth.validation.password.minLength'))
+    .min(8, t('auth.validation.password.minLength'))
     .required(t('auth.validation.password.required')),
 })
 

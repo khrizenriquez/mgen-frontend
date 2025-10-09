@@ -73,7 +73,7 @@ describe('i18n Configuration', () => {
     const termsRequired = i18n.t('auth.validation.terms.required')
 
     expect(emailRequired).toBe('El correo electrónico es requerido')
-    expect(passwordMinLength).toBe('La contraseña debe tener al menos 6 caracteres')
+    expect(passwordMinLength).toBe('La contraseña debe tener al menos 8 caracteres')
     expect(nameRequired).toBe('El nombre es requerido')
     expect(termsRequired).toBe('Debes aceptar los términos y condiciones')
   })

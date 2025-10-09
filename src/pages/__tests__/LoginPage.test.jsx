@@ -12,7 +12,8 @@ import i18n from '../../i18n'
 // Mock AuthService
 vi.mock('../../core/services/AuthService', () => ({
   default: {
-    login: vi.fn()
+    login: vi.fn(),
+    getDashboardRoute: vi.fn()
   }
 }))
 
@@ -104,6 +105,7 @@ describe('LoginPage', () => {
 
   test('submits form with valid data', async () => {
     AuthService.login.mockResolvedValue({ success: true, user: { id: 1, email: 'test@example.com' } })
+    AuthService.getDashboardRoute.mockReturnValue('/dashboard')
 
     render(
       <TestWrapper>
@@ -126,7 +128,8 @@ describe('LoginPage', () => {
       })
     })
 
-    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true })
+    expect(AuthService.getDashboardRoute).toHaveBeenCalled()
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true })
   })
 
   test('shows error message on login failure', async () => {

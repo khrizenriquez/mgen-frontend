@@ -4,8 +4,26 @@ Sistema de gestión de donaciones -
 
 ## 🚀 Inicio Rápido
 
-### Prerrequisitos
-- Docker y Docker Compose instalados (para producción)
+### Pre# Scripts Disponibles
+
+```bash
+# Desarrollo
+pnpm dev          # Servidor de desarrollo
+pnpm build        # Construir para producción
+pnpm preview      # Vista previa del build
+
+# Testing
+pnpm test         # Ejecutar tests
+pnpm test:ui      # Tests con interfaz visual
+pnpm test:coverage # Tests con cobertura
+
+# Formateo
+pnpm format       # Formatear código con Prettier
+pnpm format:check # Verificar formato
+
+# TypeScript
+pnpm typecheck    # Verificar tipos
+``` y Docker Compose instalados (para producción)
 - Node.js 18+ y pnpm (para desarrollo)
 - Git
 
@@ -16,18 +34,28 @@ Sistema de gestión de donaciones -
 git clone <repository-url>
 cd mgen-frontend
 
-# Construir y levantar el contenedor
-docker build -t donations-frontend .
-docker run -d -p 80:80 --name donations-app donations-frontend
-
-# Para reconstruir y reiniciar (después de cambios)
-docker build -t donations-frontend . && docker stop donations-app && docker rm donations-app && docker run -d -p 80:80 --name donations-app donations-frontend
-
-# O usando docker-compose
+# Construir y levantar con Docker Compose
 docker-compose up -d
 
-# Detener el contenedor
-docker stop donations-app
+# O construir manualmente
+docker build -t donations-frontend .
+docker run -d -p 3000:80 --name donations-app donations-frontend
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
+```
+
+### Desarrollo con Docker (Hot Reload)
+
+```bash
+# Levantar en modo desarrollo con hot reload
+docker-compose --profile dev up
+
+# Los cambios en el código se reflejarán automáticamente
+# Accede en: http://localhost:5173
 ```
 
 ### Desarrollo Local
@@ -50,8 +78,9 @@ pnpm preview
 
 | Modo | Puerto | URL | Descripción |
 |------|---------|-----|-------------|
-| **Desarrollo** | `5173` | http://localhost:5173 | Vite dev server |
-| **Producción (Docker)** | `80` | http://localhost | Nginx serving build |
+| **Desarrollo (pnpm)** | `5173` | http://localhost:5173 | Vite dev server |
+| **Desarrollo (Docker)** | `5173` | http://localhost:5173 | Docker con hot reload |
+| **Producción (Docker)** | `3000` | http://localhost:3000 | Nginx serving build |
 | **Preview** | `4173` | http://localhost:4173 | Vista previa local |
 
 ## 🔗 Enlaces del Sistema
@@ -76,16 +105,17 @@ pnpm dev          # Servidor de desarrollo
 pnpm build        # Construir para producción
 pnpm preview      # Vista previa del build
 
-# Calidad de código
-pnpm lint         # Ejecutar ESLint
-pnpm lint:fix     # Arreglar errores de ESLint
-pnpm format       # Formatear con Prettier
-pnpm typecheck    # Verificar tipos TypeScript
+# Formateo
+pnpm format       # Formatear código con Prettier
+pnpm format:check # Verificar formato
 
 # Testing
 pnpm test         # Ejecutar tests
 pnpm test:ui      # Tests con interfaz visual
 pnpm test:coverage # Tests con cobertura
+
+# TypeScript
+pnpm typecheck    # Verificar tipos
 ```
 
 ## 🏗️ Arquitectura

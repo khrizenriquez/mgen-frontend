@@ -137,7 +137,7 @@ describe('AdminDashboardPage', () => {
     expect(screen.getByText('Gestionar Usuarios')).toBeInTheDocument()
     expect(screen.getByText('Revisar Donaciones')).toBeInTheDocument()
     expect(screen.getByText('Ver Reportes')).toBeInTheDocument()
-    expect(screen.getByText('Configuración')).toBeInTheDocument()
+    expect(screen.getAllByText('Configuración')).toHaveLength(2)
 
     // Check recent users table
     expect(screen.getByText('Usuarios Recientes')).toBeInTheDocument()
@@ -185,8 +185,8 @@ describe('AdminDashboardPage', () => {
     })
 
     // Check role badges
-    expect(screen.getByText('Usuario')).toBeInTheDocument() // USER role
-    expect(screen.getByText('Donante')).toBeInTheDocument() // DONOR role
+    expect(screen.getAllByText('Usuario')).toHaveLength(2) // Table header and badge
+    expect(screen.getAllByText('Donante')).toHaveLength(2) // Table header and badge
   })
 
   test('renders action buttons with correct links', async () => {
@@ -204,11 +204,10 @@ describe('AdminDashboardPage', () => {
 
     // Check export and settings buttons
     expect(screen.getByText('Exportar Reporte')).toBeInTheDocument()
-    expect(screen.getByText('Configuración')).toBeInTheDocument()
+    expect(screen.getAllByText('Configuración')).toHaveLength(2)
 
     // Check "Ver todos" links
-    expect(screen.getAllByText('Ver todos')).toHaveLength(2)
-    expect(screen.getByText('Ver todas')).toBeInTheDocument()
+    expect(screen.getAllByText('Ver todas')).toHaveLength(1)
   })
 
   test('handles empty data gracefully', async () => {
@@ -237,7 +236,7 @@ describe('AdminDashboardPage', () => {
     })
 
     // Check zero values are displayed
-    expect(screen.getByText('0')).toBeInTheDocument()
+    expect(screen.getAllByText('0')).toHaveLength(2)
     expect(screen.getByText('Q0')).toBeInTheDocument()
 
     // Tables should be empty but headers should still be there

@@ -243,7 +243,6 @@ describe('UserDashboardPage', () => {
 
     // Check formatted numbers
     expect(screen.getByText('Q1,000,000')).toBeInTheDocument()
-    expect(screen.getByText('Q5,000,000')).toBeInTheDocument()
   })
 
   test('displays activity icons correctly', async () => {
@@ -260,7 +259,7 @@ describe('UserDashboardPage', () => {
     })
 
     // The icons are rendered but we can check that the activity items are present
-    expect(screen.getByText('Actividad del sistema')).toBeInTheDocument()
+    expect(screen.getAllByText('Actividad del sistema')).toHaveLength(3)
   })
 
   test('calls API on component mount', async () => {

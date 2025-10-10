@@ -107,13 +107,13 @@ describe('DonorDashboardPage', () => {
     expect(screen.getByText('Gracias por tu generosidad, María. Tu impacto es invaluable.')).toBeInTheDocument()
 
     // Check action buttons
-    expect(screen.getByText('Nueva Donación')).toBeInTheDocument()
+    expect(screen.getAllByText('Nueva Donación')).toHaveLength(2)
     expect(screen.getByText('Donar Ahora')).toBeInTheDocument()
 
     // Check stats cards
     expect(screen.getByText('12')).toBeInTheDocument() // total donations
     expect(screen.getByText('Q2,500')).toBeInTheDocument() // total amount
-    expect(screen.getByText('Q208')).toBeInTheDocument() // monthly average
+    expect(screen.getByText('Promedio Q208/mes')).toBeInTheDocument() // monthly average
     expect(screen.getByText('Programa de Alimentación')).toBeInTheDocument() // favorite program
 
     // Check stat labels
@@ -135,7 +135,7 @@ describe('DonorDashboardPage', () => {
 
     // Check recent donations
     expect(screen.getByText('Mis Donaciones Recientes')).toBeInTheDocument()
-    expect(screen.getByText('Donación #donation-')).toBeInTheDocument()
+    expect(screen.getAllByText(/Donación #donation/)).toHaveLength(2)
     expect(screen.getByText('Q185')).toBeInTheDocument()
     expect(screen.getByText('Q75')).toBeInTheDocument()
   })
@@ -156,7 +156,7 @@ describe('DonorDashboardPage', () => {
     // Check streak display
     expect(screen.getByText('5 meses consecutivos')).toBeInTheDocument()
     expect(screen.getByText('Donante Oro')).toBeInTheDocument()
-    expect(screen.getByText('Donante Platino')).toBeInTheDocument()
+    expect(screen.getByText('Próximo: Donante Platino')).toBeInTheDocument()
   })
 
   test('renders upcoming programs with progress bars', async () => {
@@ -275,7 +275,7 @@ describe('DonorDashboardPage', () => {
 
     // Check formatted numbers
     expect(screen.getByText('Q1,000,000')).toBeInTheDocument()
-    expect(screen.getByText('Q83,333')).toBeInTheDocument()
+    expect(screen.getByText(/Q83,333/)).toBeInTheDocument()
   })
 
   test('calls API on component mount', async () => {

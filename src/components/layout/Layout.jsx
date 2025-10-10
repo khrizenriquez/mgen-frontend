@@ -50,7 +50,7 @@ export default function Layout({ children }) {
         <div className="container-fluid">
           {/* Logo and brand */}
           <Link to="/" className="navbar-brand d-flex align-items-center" data-testid="navbar-brand">
-            <i className="bi bi-heart-fill text-danger me-2" style={{fontSize: '1.5rem'}} data-testid="navbar-logo"></i>
+            <i className="bi bi-heart-fill text-danger me-2" data-testid="navbar-logo" style={{fontSize: '1.5rem'}}></i>
             <span className="fw-semibold">{t('common.brand.name')}</span>
           </Link>
 
@@ -58,11 +58,11 @@ export default function Layout({ children }) {
           <button
             className="navbar-toggler"
             type="button"
-            data-testid="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-controls="navbarNav"
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation"
+            data-testid="mobile-menu-toggle"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -72,19 +72,15 @@ export default function Layout({ children }) {
             <ul className="navbar-nav ms-auto">
               {navigation.map((item) => {
                 const isActive = location.pathname === item.href
-                const testId = item.href === '/' ? 'nav-link-inicio' :
-                               item.href === '/donations' ? 'nav-link-donaciones' :
-                               item.href === '/donate' ? 'nav-link-donar' :
-                               item.href === '/stats' ? 'nav-link-estadísticas' : 'nav-link'
                 return (
                   <li className="nav-item" key={item.name}>
                     <Link
                       to={item.href}
-                      data-testid={testId}
                       className={`nav-link d-flex align-items-center ${
                         isActive ? 'active text-primary fw-medium' : 'text-dark'
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
+                      data-testid={`nav-link-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <i className={`${item.icon} me-2`}></i>
                       {item.name}

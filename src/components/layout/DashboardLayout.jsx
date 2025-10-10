@@ -139,6 +139,7 @@ export default function DashboardLayout({ children }) {
                     as={Link}
                     to={item.href}
                     className={`mx-2 ${isActive ? 'text-primary fw-medium' : 'text-dark'}`}
+                    data-testid={`nav-link-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     <i className={`${item.icon} me-1`}></i>
                     {item.name}
@@ -157,10 +158,10 @@ export default function DashboardLayout({ children }) {
               </span>
             </div>
             {/* Desktop: Show full user info */}
-            <div className="d-none d-md-flex align-items-center me-3">
+            <div className="d-none d-md-flex align-items-center me-3" data-testid="desktop-user-info">
               <span className="text-muted small me-2">Bienvenido,</span>
               <span className="fw-medium me-2">{userName || 'Usuario'}</span>
-              <span className={`badge bg-${getRoleColor(userRole)} text-white`}>
+              <span className={`badge bg-${getRoleColor(userRole)} text-white`} data-testid="desktop-role-badge">
                 {getRoleDisplayName(userRole)}
               </span>
             </div>
@@ -170,6 +171,7 @@ export default function DashboardLayout({ children }) {
               variant="outline-secondary"
               className="d-lg-none me-2"
               onClick={() => setShowMobileMenu(true)}
+              data-testid="mobile-menu-toggle"
             >
               <i className="bi bi-list"></i>
             </Button>
@@ -178,6 +180,7 @@ export default function DashboardLayout({ children }) {
               variant="outline-danger"
               size="sm"
               onClick={handleLogout}
+              data-testid="logout-button"
             >
               <i className="bi bi-box-arrow-right me-1"></i>
               <span className="d-none d-sm-inline">Salir</span>
@@ -192,6 +195,7 @@ export default function DashboardLayout({ children }) {
         onHide={() => setShowMobileMenu(false)}
         placement="end"
         className="d-lg-none"
+        data-testid="mobile-offcanvas"
       >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
@@ -201,12 +205,12 @@ export default function DashboardLayout({ children }) {
             </div>
           </Offcanvas.Title>
         </Offcanvas.Header>
-        <Offcanvas.Body>
+        <Offcanvas.Body data-testid="offcanvas-body">
           <div className="mb-3">
             <div className="d-flex align-items-center mb-3">
               <div className="flex-grow-1">
                 <div className="fw-medium">{userName || 'Usuario'}</div>
-                <div className={`badge bg-${getRoleColor(userRole)} text-white mt-1`}>
+                <div className={`badge bg-${getRoleColor(userRole)} text-white mt-1`} data-testid="offcanvas-role-badge">
                   {getRoleDisplayName(userRole)}
                 </div>
               </div>
@@ -226,6 +230,7 @@ export default function DashboardLayout({ children }) {
                     isActive ? 'bg-primary text-white' : 'text-dark'
                   }`}
                   onClick={() => setShowMobileMenu(false)}
+                  data-testid={`mobile-nav-link-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                 >
                   <i className={`${item.icon} me-3 fs-5`}></i>
                   <span>{item.name}</span>
@@ -246,6 +251,7 @@ export default function DashboardLayout({ children }) {
               setShowMobileMenu(false)
               handleLogout()
             }}
+            data-testid="mobile-logout-button"
           >
             <i className="bi bi-box-arrow-right me-2"></i>
             Cerrar sesión

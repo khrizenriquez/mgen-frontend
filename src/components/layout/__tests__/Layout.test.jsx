@@ -5,6 +5,7 @@ import { vi } from 'vitest'
 import i18n from '../../../i18n'
 import Layout from '../Layout'
 import AuthService from '../../../core/services/AuthService'
+import { useLocation } from 'react-router-dom'
 
 // Mock react-router-dom
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -13,7 +14,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
     ...actual,
     useNavigate: vi.fn(() => vi.fn()),
     useLocation: vi.fn(() => ({ pathname: '/' })),
-    Link: ({ children, ...props }) => <a {...props}>{children}</a>,
+    Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a>,
   }
 })
 
@@ -271,13 +272,8 @@ describe('Layout', () => {
 
     test('highlights active navigation item', () => {
       // Mock useLocation to return a specific pathname
-      vi.mock('react-router-dom', async () => {
-        const actual = await vi.importActual('react-router-dom')
-        return {
-          ...actual,
-          useLocation: () => ({ pathname: '/donations' }),
-        }
-      })
+      const mockUseLocation = vi.mocked(useLocation)
+      mockUseLocation.mockReturnValue({ pathname: '/donations' })
 
       renderWithProviders(<Layout>{mockChildren}</Layout>)
 
@@ -286,13 +282,8 @@ describe('Layout', () => {
     })
 
     test('does not highlight inactive navigation items', () => {
-      vi.mock('react-router-dom', async () => {
-        const actual = await vi.importActual('react-router-dom')
-        return {
-          ...actual,
-          useLocation: () => ({ pathname: '/some-other-path' }),
-        }
-      })
+      const mockUseLocation = vi.mocked(useLocation)
+      mockUseLocation.mockReturnValue({ pathname: '/some-other-path' })
 
       renderWithProviders(<Layout>{mockChildren}</Layout>)
 

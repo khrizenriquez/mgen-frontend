@@ -12,7 +12,7 @@ Sistema de gestión de donaciones -
 ### Levantar con Docker (Producción)
 
 ```bash
-# Clonar el repositorio (si no lo has hecho)
+# Clonar el repositorio
 git clone <repository-url>
 cd mgen-frontend
 
@@ -20,7 +20,10 @@ cd mgen-frontend
 docker build -t donations-frontend .
 docker run -d -p 80:80 --name donations-app donations-frontend
 
-# O usando docker-compose (si tienes uno configurado)
+# Para reconstruir y reiniciar (después de cambios)
+docker build -t donations-frontend . && docker stop donations-app && docker rm donations-app && docker run -d -p 80:80 --name donations-app donations-frontend
+
+# O usando docker-compose
 docker-compose up -d
 
 # Detener el contenedor
@@ -56,6 +59,14 @@ pnpm preview
 Una vez levantado el backend, el frontend se conectará a:
 - **Backend API**: http://localhost:8000/api/v1
 - **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### Modo Desarrollo con Mock Data
+
+Si el backend no está disponible, el frontend automáticamente usa **datos mock** para desarrollo:
+- **Login**: Funciona con cualquier email (admin@, donor@, user@)
+- **Dashboard**: Carga con estadísticas de ejemplo
+- **Fallback automático**: Sin configuración adicional necesaria
 
 ## 🛠️ Scripts Disponibles
 
@@ -94,3 +105,34 @@ pnpm test:coverage # Tests con cobertura
 - **Bootstrap Icons** - Iconografía
 - **React Bootstrap** - Componentes React
 - **Custom CSS** - Estilos personalizados
+
+## 🚀 Despliegue en Producción
+
+### Netlify
+
+1. **Conectar repositorio**: Conecta tu repositorio de GitHub a Netlify
+2. **Configurar build**:
+   - Build command: `pnpm install --frozen-lockfile && pnpm build`
+   - Publish directory: `dist`
+3. **Variables de entorno**:
+   ```
+   VITE_API_URL=https://your-railway-app.railway.app
+   ```
+4. **Configurar CORS en backend**: En Railway, establece la variable de entorno:
+   ```
+   ALLOWED_ORIGINS=https://your-netlify-site.netlify.app
+   ```
+
+### Railway (Backend)
+
+1. **Desplegar backend**: Conecta tu repositorio backend a Railway
+2. **Variables de entorno**: Configura todas las variables del `env.example`
+3. **CORS**: Asegúrate de que `ALLOWED_ORIGINS` incluya tu dominio de Netlify
+
+### Verificación
+
+Después del despliegue, verifica:
+- ✅ Frontend carga correctamente
+- ✅ Login funciona con backend
+- ✅ Redirección por roles funciona
+- ✅ API calls no tienen errores de CORS

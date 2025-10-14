@@ -1,0 +1,287 @@
+---
+globs: *.test.js,*.test.jsx,*.spec.js,*.spec.jsx
+description: React testing conventions using Vitest and React Testing Library
+---
+
+# React Testing Conventions
+
+## Testing Stack
+- **Vitest**: Test runner (faster than Jest for Vite projects)
+- **React Testing Library**: Component testing utilities
+- **jsdom**: DOM environment for tests
+- **@testing-library/user-event**: User interaction simulation
+
+## Test File Organization
+```
+src/
+├── components/
+│   └── donation/
+│       ├── DonationCard.jsx
+│       └── DonationCard.test.jsx
+├── hooks/
+│   ├── useDonations.js
+│   └── useDonations.test.js
+├── pages/
+│   ├── DonationsPage.jsx
+│   └── DonationsPage.test.jsx
+└── test/
+    ├── setup.js           # Test setup
+    ├── mocks/             # Mock implementations
+    └── utils/             # Test utilities
+```
+
+## Test Setup
+Configure test environment in `src/test/setup.js`:
+
+```javascript
+import { expect, afterEach } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import * as matchers from '@testing-library/jest-dom/matchers'
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers)
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup()
+})
+
+// Mock environment variables
+import.meta.env.VITE_API_BASE_URL = 'http://localhost:8000'
+```
+
+## Component Testing Patterns
+Test components following these patterns:
+
+```jsx
+// src/components/donation/DonationCard.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi } from 'vitest'
+import { DonationCard } from './DonationCard'
+
+const mockDonation = {
+  id: '123e4567-e89b-12d3-a456-426614174000',
+  amount_gtq: 100.00,
+  status_id: 1,
+  status_name: 'PENDING',
+  donor_email: 'donor@example.com',
+  donor_name: 'John Doe',
+  formatted_amount: 'Q100.00',
+  created_at: '2024-01-15T10:30:00Z'
+}
+
+describe('DonationCard', () => {
+  it('renders donation information correctly', () => {
+    render(<DonationCard donation={mockDonation} />)
+    
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('Q100.00')).toBeInTheDocument()
+    expect(screen.getByText('donor@example.com')).toBeInTheDocument()
+  })
+
+  it('calls onEdit when edit button is clicked', async () => {
+    const user = userEvent.setup()
+    const mockOnEdit = vi.fn()
+    
+    render(
+      <DonationCard 
+        donation={mockDonation} 
+        onEdit={mockOnEdit} 
+      />
+    )
+    
+    const editButton = screen.getByRole('button', { name: /edit/i })
+    await user.click(editButton)
+    
+    expect(mockOnEdit).toHaveBeenCalledWith(mockDonation.id)
+  })
+
+  it('shows appropriate status badge', () => {
+    render(<DonationCard donation={mockDonation} />)
+    
+    const statusBadge = screen.getByText('PENDING')
+    expect(statusBadge).toHaveClass('badge', 'bg-warning')
+  })
+})
+```
+
+## Testing Hooks
+Test custom hooks with `renderHook`:
+
+```javascript
+// src/hooks/useDonations.test.js
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { useDonations } from './useDonations'
+
+// Mock the API service
+vi.mock('@core/services/api', () => ({
+  apiClient: {
+    get: vi.fn()
+  }
+}))
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  })
+  
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  )
+}
+
+describe('useDonations', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('fetches donations successfully', async () => {
+    const mockResponse = {
+      data: {
+        donations: [mockDonation],
+        total: 1,
+        limit: 100,
+        offset: 0
+      }
+    }
+    
+    vi.mocked(apiClient.get).mockResolvedValue(mockResponse)
+    
+    const { result } = renderHook(() => useDonations(), {
+      wrapper: createWrapper()
+    })
+    
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+    
+    expect(result.current.data.donations).toHaveLength(1)
+    expect(result.current.data.donations[0].donor_name).toBe('John Doe')
+  })
+})
+```
+
+## Testing Pages with Context
+Test page components with required providers:
+
+```jsx
+// src/pages/DonationsPage.test.jsx
+import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { BrowserRouter } from 'react-router-dom'
+import { AppProvider } from '@core/providers/AppProvider'
+import { DonationsPage } from './DonationsPage'
+
+const renderWithProviders = (component) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } }
+  })
+  
+  return render(
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AppProvider>
+          {component}
+        </AppProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  )
+}
+
+describe('DonationsPage', () => {
+  it('renders loading spinner initially', () => {
+    renderWithProviders(<DonationsPage />)
+    
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
+  })
+})
+```
+
+## Mocking API Calls
+Mock API responses consistently:
+
+```javascript
+// src/test/mocks/apiMocks.js
+import { vi } from 'vitest'
+
+export const mockApiResponse = (data, status = 200) => {
+  return Promise.resolve({
+    data,
+    status,
+    statusText: 'OK',
+    headers: {},
+    config: {}
+  })
+}
+
+export const mockApiError = (status = 500, message = 'Server Error') => {
+  const error = new Error(message)
+  error.response = {
+    status,
+    data: { detail: message },
+    headers: {}
+  }
+  return Promise.reject(error)
+}
+```
+
+## Testing User Interactions
+Test user interactions with realistic scenarios:
+
+```jsx
+it('submits donation form with valid data', async () => {
+  const user = userEvent.setup()
+  const mockOnSubmit = vi.fn()
+  
+  render(<DonationForm onSubmit={mockOnSubmit} />)
+  
+  // Fill form fields
+  await user.type(screen.getByLabelText(/donor name/i), 'John Doe')
+  await user.type(screen.getByLabelText(/email/i), 'john@example.com')
+  await user.type(screen.getByLabelText(/amount/i), '100')
+  
+  // Submit form
+  await user.click(screen.getByRole('button', { name: /submit/i }))
+  
+  expect(mockOnSubmit).toHaveBeenCalledWith({
+    donor_name: 'John Doe',
+    donor_email: 'john@example.com',
+    amount_gtq: 100
+  })
+})
+```
+
+## Test Coverage Goals
+- **Components**: Test rendering, props, user interactions
+- **Hooks**: Test data fetching, state management, side effects
+- **Services**: Test business logic, error handling
+- **Pages**: Test integration, routing, context usage
+
+## Running Tests
+```bash
+# Run all tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests for specific file
+npm run test DonationCard.test.jsx
+```
+
+## Test Data Management
+- Use factories for creating test data
+- Keep test data realistic but non-sensitive
+- Use UUIDs for IDs in test data
+- Mock external dependencies at module boundaries

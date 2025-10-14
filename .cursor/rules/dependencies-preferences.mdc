@@ -1,0 +1,128 @@
+---
+alwaysApply: true
+description: Technology stack preferences and dependency management for the donations frontend
+---
+
+# Dependencies & Technology Preferences
+
+## Package Manager
+- **Required**: Use pnpm (specified in [package.json](mdc:package.json))
+- **Version**: pnpm >= 8.0.0
+- **Commands**: Use `pnpm` instead of `npm` or `yarn`
+
+```bash
+# Correct commands
+pnpm install
+pnpm dev
+pnpm build
+pnpm test
+
+# Avoid npm/yarn
+npm install  # ❌ Don't use
+yarn add     # ❌ Don't use
+```
+
+## Styling Framework
+- **MANDATORY**: Use Bootstrap 5.3.2 + react-bootstrap
+- **FORBIDDEN**: Tailwind CSS is NOT allowed
+- **Remove**: Any Tailwind CSS references, configurations, or classes
+
+```javascript
+// ✅ Correct: Bootstrap imports
+import { Container, Row, Col, Card, Button } from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
+
+// ❌ Forbidden: Tailwind CSS
+import 'tailwindcss/tailwind.css'  // Remove this
+className="flex justify-center"     // Use Bootstrap classes instead
+```
+
+## State Management Strategy
+- **Server State**: React Query (react-query) - for API data fetching
+- **Client State**: React Context + useReducer - for app-wide state
+- **Form State**: React Hook Form - for form management
+- **Avoid**: Redux, Zustand, or other state management libraries
+
+## API Communication
+- **HTTP Client**: Axios (configured in [src/core/services/api.js](mdc:src/core/services/api.js))
+- **Pattern**: Repository pattern for data access
+- **Error Handling**: Centralized error handling with interceptors
+
+## Component Libraries
+**Allowed**:
+- react-bootstrap - Primary UI component library
+- react-hook-form - Form handling
+- react-router-dom - Routing
+- react-query - Server state
+- react-hot-toast - Toast notifications
+
+**Not Allowed**:
+- Any Tailwind CSS UI libraries (Headless UI, etc.)
+- Material-UI (MUI)
+- Ant Design
+- Chakra UI
+
+## Testing Stack
+- **Test Runner**: Vitest (not Jest)
+- **DOM Testing**: React Testing Library
+- **User Events**: @testing-library/user-event
+- **Environment**: jsdom
+
+## Code Quality Tools
+- **Linting**: ESLint with React hooks plugin
+- **Formatting**: Prettier with configured rules in [.prettierrc](mdc:.prettierrc)
+- **Type Checking**: TypeScript support (though using .jsx files)
+
+## Development Dependencies
+Based on [package.json](mdc:package.json):
+
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "axios": "^1.6.2",
+    "react-query": "^3.39.3",
+    "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
+    "bootstrap": "^5.3.2",           // ✅ Required
+    "bootstrap-icons": "^1.11.2",   // ✅ Required
+    "react-bootstrap": "^2.9.1"     // ✅ Required
+  }
+}
+```
+
+## File Extensions
+- **React Components**: `.jsx` (not `.js` for components)
+- **Utilities/Hooks**: `.js` (unless TypeScript)
+- **Tests**: `.test.jsx` or `.spec.jsx`
+- **Types**: `.ts` or `.d.ts`
+
+## Environment Requirements
+- **Node.js**: >= 18.0.0 (specified in package.json engines)
+- **pnpm**: >= 8.0.0
+- **Development Port**: 5173 (Vite default)
+- **API Backend**: http://localhost:8000
+
+## Import Preferences
+- Use path aliases defined in [vite.config.js](mdc:vite.config.js):
+  - `@/` - src root
+  - `@core/` - core business logic
+  - `@components/` - UI components
+  - `@pages/` - page components
+  - `@hooks/` - custom hooks
+  - `@styles/` - styles
+  - `@types/` - type definitions
+
+## Browser Support
+- **Target**: Modern browsers (ES2020+)
+- **Build Target**: ESNext (configured in Vite)
+- **Polyfills**: Not needed due to modern target
+
+## Performance Preferences
+- **Code Splitting**: Use dynamic imports for routes
+- **Bundle Chunking**: Vendor, router, bootstrap chunks (configured in Vite)
+- **Lazy Loading**: Implement for non-critical components
+- **Image Optimization**: Use appropriate formats and sizes

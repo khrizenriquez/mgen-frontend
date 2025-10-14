@@ -1,0 +1,104 @@
+---
+globs: *.jsx,*.js,*.tsx,*.ts
+description: React and JSX conventions for the donations frontend application
+---
+
+# React & JSX Conventions
+
+## Component Structure
+Follow the hexagonal architecture pattern in the frontend:
+
+```
+src/
+├── core/                # Business logic (inner layer)
+│   ├── entities/       # Domain entities (Donation.js)
+│   ├── repositories/   # API repository interfaces
+│   ├── services/       # Business services
+│   └── providers/      # Context providers
+├── components/         # UI Components (outer layer)
+│   ├── donation/       # Feature-specific components
+│   ├── layout/         # Layout components
+│   ├── forms/          # Form components
+│   └── ui/             # Reusable UI components
+├── pages/              # Page components (outer layer)
+├── hooks/              # Custom React hooks
+├── styles/             # Global styles
+└── utils/              # Utility functions
+```
+
+## Import Organization
+```jsx
+// React and hooks first
+import React, { useState, useEffect } from 'react'
+
+// Third-party libraries
+import { useQuery } from 'react-query'
+import { Form, Button, Container } from 'react-bootstrap'
+
+// Internal imports with path aliases
+import { DonationService } from '@core/services/DonationService'
+import { LoadingSpinner } from '@components/ui/LoadingSpinner'
+import { useToast } from '@hooks/useToast'
+```
+
+## Component Conventions
+- Use functional components with hooks
+- Use PascalCase for component names
+- Include PropTypes or TypeScript for props validation
+- One component per file, named same as file
+
+```jsx
+// Good component structure
+import React from 'react'
+import { Card, Button } from 'react-bootstrap'
+
+export const DonationCard = ({ donation, onEdit, onDelete }) => {
+  const handleEdit = () => {
+    onEdit(donation.id)
+  }
+
+  return (
+    <Card className="mb-3">
+      <Card.Body>
+        <Card.Title>{donation.donor_name}</Card.Title>
+        <Card.Text>{donation.formatted_amount}</Card.Text>
+        <Button variant="primary" onClick={handleEdit}>
+          Edit
+        </Button>
+      </Card.Body>
+    </Card>
+  )
+}
+```
+
+## State Management
+- Use `useState` for local component state
+- Use `useContext` with providers for global state
+- Use React Query for server state management
+- Keep state as close to where it's used as possible
+
+## Custom Hooks
+- Start with `use` prefix
+- Extract reusable logic into custom hooks
+- Return objects for multiple values, not arrays
+
+```jsx
+// Custom hook example
+export const useDonations = (filters = {}) => {
+  return useQuery({
+    queryKey: ['donations', filters],
+    queryFn: () => DonationService.getAll(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+```
+
+## Error Boundaries
+- Wrap page components in ErrorBoundary
+- Handle API errors gracefully with try/catch
+- Show user-friendly error messages
+
+## Event Handlers
+- Use descriptive names: `handleSubmit`, `handleChange`
+- Pass event objects when needed
+- Use `useCallback` for expensive computations or to prevent unnecessary renders

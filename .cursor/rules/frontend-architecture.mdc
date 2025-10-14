@@ -1,0 +1,212 @@
+---
+alwaysApply: true
+description: Frontend hexagonal architecture patterns for the donations management system
+---
+
+# Frontend Hexagonal Architecture
+
+## Architecture Overview
+The frontend follows hexagonal (ports and adapters) architecture similar to the backend:
+
+```
+src/
+├── core/               # Business logic (Domain layer)
+│   ├── entities/      # Domain models (Donation.js)
+│   ├── repositories/ # Data access interfaces
+│   ├── services/     # Business services
+│   └── providers/    # Context providers
+├── components/        # UI Components (Presentation layer)
+│   ├── donation/     # Feature components
+│   ├── layout/       # Layout components
+│   ├── forms/        # Form components
+│   └── ui/           # Reusable UI components
+├── pages/            # Page components (Application layer)
+├── hooks/            # Custom React hooks
+└── utils/            # Utilities and helpers
+```
+
+## Core Layer (Domain)
+Business logic and domain models reside here:
+
+```javascript
+// src/core/entities/Donation.js
+export class Donation {
+  constructor(data) {
+    this.id = data.id
+    this.amount_gtq = data.amount_gtq
+    this.status_id = data.status_id
+    this.donor_email = data.donor_email
+    this.donor_name = data.donor_name
+    // ... other fields
+  }
+
+  get formatted_amount() {
+    return `Q${this.amount_gtq.toFixed(2)}`
+  }
+
+  get is_pending() {
+    return this.status_id === 1
+  }
+
+  get is_approved() {
+    return this.status_id === 2
+  }
+}
+```
+
+## Repository Pattern
+Define interfaces for data access:
+
+```javascript
+// src/core/repositories/DonationRepository.js
+export class DonationRepository {
+  constructor(apiClient) {
+    this.apiClient = apiClient
+  }
+
+  async getAll(filters = {}) {
+    const response = await this.apiClient.get('/api/v1/donations', { params: filters })
+    return response.data.donations.map(data => new Donation(data))
+  }
+
+  async getById(id) {
+    const response = await this.apiClient.get(`/api/v1/donations/${id}`)
+    return new Donation(response.data)
+  }
+
+  async create(donationData) {
+    const response = await this.apiClient.post('/api/v1/donations', donationData)
+    return new Donation(response.data)
+  }
+}
+```
+
+## Service Layer
+Coordinate business operations:
+
+```javascript
+// src/core/services/DonationService.js
+export class DonationService {
+  constructor(donationRepository) {
+    this.donationRepository = donationRepository
+  }
+
+  async getDonationsList(filters = {}) {
+    try {
+      const donations = await this.donationRepository.getAll(filters)
+      return { success: true, data: donations }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  async createDonation(donationData) {
+    // Business validation
+    if (!donationData.donor_email || !donationData.amount_gtq) {
+      throw new Error('Required fields missing')
+    }
+
+    return await this.donationRepository.create(donationData)
+  }
+}
+```
+
+## Provider Pattern
+Use React Context for dependency injection:
+
+```jsx
+// src/core/providers/AppProvider.jsx
+import React, { createContext, useContext } from 'react'
+import { DonationRepository } from '@core/repositories/DonationRepository'
+import { DonationService } from '@core/services/DonationService'
+import { apiClient } from '@core/services/api'
+
+const AppContext = createContext()
+
+export const AppProvider = ({ children }) => {
+  const donationRepository = new DonationRepository(apiClient)
+  const donationService = new DonationService(donationRepository)
+
+  const services = {
+    donationService,
+    donationRepository,
+  }
+
+  return (
+    <AppContext.Provider value={services}>
+      {children}
+    </AppContext.Provider>
+  )
+}
+
+export const useServices = () => {
+  const context = useContext(AppContext)
+  if (!context) {
+    throw new Error('useServices must be used within AppProvider')
+  }
+  return context
+}
+```
+
+## Component Organization
+- **Pages**: Route-level components that orchestrate data fetching and layout
+- **Components**: Feature-specific components that handle specific UI concerns
+- **UI Components**: Reusable, generic UI elements
+
+```jsx
+// src/pages/DonationsPage.jsx - Page level
+import React from 'react'
+import { Container, Row, Col } from 'react-bootstrap'
+import { DonationsList } from '@components/donation/DonationsList'
+import { DonationsFilters } from '@components/donation/DonationsFilters'
+
+export const DonationsPage = () => {
+  return (
+    <Container>
+      <Row>
+        <Col md={3}>
+          <DonationsFilters />
+        </Col>
+        <Col md={9}>
+          <DonationsList />
+        </Col>
+      </Row>
+    </Container>
+  )
+}
+```
+
+## Custom Hooks
+Extract component logic into reusable hooks:
+
+```jsx
+// src/hooks/useDonations.js
+import { useQuery } from 'react-query'
+import { useServices } from '@core/providers/AppProvider'
+
+export const useDonations = (filters = {}) => {
+  const { donationService } = useServices()
+
+  return useQuery({
+    queryKey: ['donations', filters],
+    queryFn: () => donationService.getDonationsList(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    onError: (error) => {
+      console.error('Error fetching donations:', error)
+    }
+  })
+}
+```
+
+## Dependency Flow
+- Pages depend on services through hooks
+- Services depend on repositories
+- Repositories depend on API clients
+- Components receive data as props (no direct service access)
+- Use providers for dependency injection
+
+## Error Handling
+- Services return result objects: `{ success: boolean, data?, error? }`
+- Use Error Boundaries for component error handling
+- Log errors consistently
+- Show user-friendly error messages

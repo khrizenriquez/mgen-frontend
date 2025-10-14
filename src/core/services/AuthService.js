@@ -1,0 +1,398 @@
+/**
+ * Authentication Service
+ * Handles authentication logic with backend integration
+ */
+import api from './api.js'
+
+class AuthService {
+  constructor() {
+    this.currentUser = null
+    this.listeners = []
+    this.isRefreshing = false
+    this.failedQueue = []
+    this.loadUserFromStorage()
+  }
+
+  /**
+   * Load user data from localStorage on app initialization
+   */
+  loadUserFromStorage() {
+    try {
+      const userData = localStorage.getItem('currentUser')
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (userData && accessToken) {
+        this.currentUser = JSON.parse(userData)
+        this.notifyListeners()
+      } else {
+        // Clean up if tokens are missing
+        this.clearTokens()
+      }
+    } catch (error) {
+      console.error('Error loading user from storage:', error)
+      this.clearTokens()
+    }
+  }
+
+  /**
+   * Save user data and tokens to localStorage
+   */
+  saveUserToStorage(user, tokens = {}) {
+    try {
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user))
+      }
+      if (tokens.access_token) {
+        localStorage.setItem('accessToken', tokens.access_token)
+      }
+      if (tokens.refresh_token) {
+        localStorage.setItem('refreshToken', tokens.refresh_token)
+      }
+    } catch (error) {
+      console.error('Error saving user to storage:', error)
+    }
+  }
+
+  /**
+   * Clear all authentication data from localStorage
+   */
+  clearTokens() {
+    localStorage.removeItem('currentUser')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+  }
+
+  /**
+   * Get stored access token
+   */
+  getAccessToken() {
+    return localStorage.getItem('accessToken')
+  }
+
+  /**
+   * Get stored refresh token
+   */
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken')
+  }
+
+  /**
+   * Subscribe to authentication state changes
+   */
+  subscribe(listener) {
+    this.listeners.push(listener)
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener)
+    }
+  }
+
+  /**
+   * Notify all listeners of authentication state changes
+   */
+  notifyListeners() {
+    this.listeners.forEach(listener => listener(this.currentUser))
+  }
+
+  /**
+   * Get current user
+   */
+  getCurrentUser() {
+    return this.currentUser
+  }
+
+  /**
+   * Check if user is authenticated
+   */
+  isAuthenticated() {
+    return this.currentUser !== null
+  }
+
+  /**
+   * Login user with backend API
+   */
+  async login(credentials) {
+    try {
+      console.log('Starting login process...')
+
+      // Check if backend is available
+      const isBackendHealthy = await this.checkBackendHealth()
+      if (!isBackendHealthy) {
+        console.warn('Backend not available, using mock login for development')
+        return this.mockLogin(credentials)
+      }
+
+      const response = await api.post('/auth/login', credentials)
+      const { access_token, refresh_token } = response.data
+      console.log('Login API call successful')
+
+      // Get user info after successful login
+      console.log('Fetching user info...')
+      const userInfo = await this.getUserInfo(access_token)
+      console.log('User info fetched:', userInfo)
+
+      const user = {
+        id: userInfo.id,
+        email: userInfo.email,
+        roles: userInfo.roles,
+        loginAt: new Date().toISOString()
+      }
+      console.log('User object created:', user)
+
+      this.currentUser = user
+      this.saveUserToStorage(user, { access_token, refresh_token })
+      this.notifyListeners()
+      console.log('User state updated and saved')
+
+      return { success: true, user, tokens: { access_token, refresh_token } }
+    } catch (error) {
+      console.error('Login error:', error)
+
+      // If it's a network error and backend is down, use mock login
+      if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_RESET') {
+        console.warn('Network error detected, falling back to mock login')
+        return this.mockLogin(credentials)
+      }
+
+      throw new Error(error.response?.data?.detail || 'Error al iniciar sesión')
+    }
+  }
+
+  /**
+   * Register user with backend API
+   */
+  async register(userData) {
+    try {
+      const response = await api.post('/auth/register', userData)
+      return { success: true, message: response.data.message }
+    } catch (error) {
+      console.error('Registration error:', error)
+      throw new Error(error.response?.data?.detail || 'Error al crear la cuenta')
+    }
+  }
+
+  /**
+   * Get user information from backend
+   */
+  async getUserInfo(accessToken = null) {
+    try {
+      const config = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}
+      const response = await api.get('/auth/me', config)
+      return response.data
+    } catch (error) {
+      console.error('Get user info error:', error)
+      throw new Error('Error al obtener información del usuario')
+    }
+  }
+
+  /**
+   * Refresh access token
+   */
+  async refreshToken() {
+    try {
+      const refreshToken = this.getRefreshToken()
+      if (!refreshToken) {
+        throw new Error('No refresh token available')
+      }
+
+      const response = await api.post('/auth/refresh', { refresh_token: refreshToken })
+      const { access_token, refresh_token: newRefreshToken } = response.data
+
+      // Update stored tokens
+      this.saveUserToStorage(null, { access_token, refresh_token: newRefreshToken })
+
+      return { access_token, refresh_token: newRefreshToken }
+    } catch (error) {
+      console.error('Token refresh error:', error)
+      // Clear tokens on refresh failure
+      this.clearTokens()
+      this.currentUser = null
+      this.notifyListeners()
+      throw new Error('Sesión expirada, por favor inicia sesión nuevamente')
+    }
+  }
+
+  /**
+   * Simulate password reset (without backend)
+   */
+  async resetPassword(email) {
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1200))
+
+      // Simulate password reset logic
+      // In a real app, this would call the backend API
+      console.log('Password reset requested for:', email)
+
+      return { success: true, message: 'Correo de recuperación enviado' }
+    } catch (error) {
+      throw new Error('Error al enviar el correo de recuperación')
+    }
+  }
+
+  /**
+   * Logout user - clears local session and notifies backend
+   */
+  async logout() {
+    try {
+      // Check if backend is available before attempting logout
+      const isBackendHealthy = await this.checkBackendHealth()
+
+      if (isBackendHealthy) {
+        // Attempt to notify backend about logout
+        const token = this.getAccessToken()
+        if (token && !token.startsWith('mock_')) {
+          try {
+            await api.post('/auth/logout')
+          } catch (apiError) {
+            // Log error but don't fail logout - backend might be down
+            console.warn('Backend logout notification failed:', apiError.message)
+          }
+        }
+      } else {
+        console.log('Backend not available, skipping logout notification')
+      }
+    } catch (error) {
+      // Log any unexpected errors but continue with local logout
+      console.error('Logout error:', error)
+    }
+
+    // Always clear local session regardless of backend response
+    this.currentUser = null
+    this.clearTokens()
+    this.notifyListeners()
+
+    return { success: true }
+  }
+
+  /**
+   * Update user profile
+   */
+  async updateProfile(userData) {
+    try {
+      if (!this.isAuthenticated()) {
+        throw new Error('Usuario no autenticado')
+      }
+
+      // Note: Backend doesn't have profile update endpoint yet
+      // This would need to be implemented in the backend first
+      throw new Error('Funcionalidad no implementada en el backend')
+    } catch (error) {
+      throw new Error('Error al actualizar el perfil')
+    }
+  }
+
+  /**
+   * Check if backend is available
+   */
+  async checkBackendHealth() {
+    try {
+      const isHealthy = await api.healthCheck()
+      return isHealthy
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * Mock login for development when backend is unavailable
+   */
+  async mockLogin(credentials) {
+    console.log('Using mock login for development')
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Mock user data based on email
+    let mockUser
+    if (credentials.email.includes('admin')) {
+      mockUser = {
+        id: 1,
+        email: credentials.email,
+        roles: ['ADMIN']
+      }
+    } else if (credentials.email.includes('donor')) {
+      mockUser = {
+        id: 2,
+        email: credentials.email,
+        roles: ['DONOR']
+      }
+    } else {
+      mockUser = {
+        id: 3,
+        email: credentials.email,
+        roles: ['USER']
+      }
+    }
+
+    const mockTokens = {
+      access_token: 'mock_access_token_' + Date.now(),
+      refresh_token: 'mock_refresh_token_' + Date.now()
+    }
+
+    const user = {
+      ...mockUser,
+      loginAt: new Date().toISOString()
+    }
+
+    this.currentUser = user
+    this.saveUserToStorage(user, mockTokens)
+    this.notifyListeners()
+
+    console.log('Mock login successful:', user)
+
+    return {
+      success: true,
+      user,
+      tokens: mockTokens,
+      isMock: true // Flag to indicate this is mock data
+    }
+  }
+
+  /**
+   * Validate authentication token by checking with backend
+   */
+  async validateToken() {
+    try {
+      if (!this.getAccessToken()) {
+        return false
+      }
+
+      // Check backend health first
+      const isBackendHealthy = await this.checkBackendHealth()
+      if (!isBackendHealthy) {
+        // If backend is down, consider token valid for development
+        return !!this.currentUser
+      }
+
+      // Try to get user info to validate token
+      await this.getUserInfo()
+      return true
+    } catch (error) {
+      console.error('Token validation error:', error)
+      return false
+    }
+  }
+
+  /**
+   * Get user role for dashboard redirection
+   */
+  getUserRole() {
+    if (!this.currentUser || !this.currentUser.roles || this.currentUser.roles.length === 0) {
+      return null
+    }
+    // Return the first role (as per user preference for single role handling)
+    return this.currentUser.roles[0].toLowerCase()
+  }
+
+  /**
+   * Get dashboard route based on user role
+   * Now returns unified /dashboard route for all roles
+   */
+  getDashboardRoute() {
+    return '/dashboard'
+  }
+}
+
+// Export singleton instance
+export default new AuthService()

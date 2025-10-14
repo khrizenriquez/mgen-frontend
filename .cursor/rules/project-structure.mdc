@@ -1,0 +1,68 @@
+---
+alwaysApply: true
+---
+
+# Donations Frontend Project Structure
+
+## Overview
+This is the React frontend for the Donations Management System, built with Vite and following hexagonal architecture principles.
+
+## Main Entry Points
+- Main application entry: [main.jsx](mdc:main.jsx)
+- App component: [src/App.jsx](mdc:src/App.jsx)
+- Main layout: [src/components/layout/Layout.jsx](mdc:src/components/layout/Layout.jsx)
+- Vite configuration: [vite.config.js](mdc:vite.config.js)
+
+## Architecture Layers
+
+### Core Layer (Business Logic)
+- **Entities**: [src/core/entities/](mdc:src/core/entities/) - Domain models (Donation.js)
+- **Services**: [src/core/services/](mdc:src/core/services/) - Business services and API client
+- **Repositories**: [src/core/repositories/](mdc:src/core/repositories/) - Data access interfaces
+- **Providers**: [src/core/providers/](mdc:src/core/providers/) - React Context providers
+
+### Presentation Layer
+- **Components**: [src/components/](mdc:src/components/) - Reusable UI components
+  - `donation/` - Donation-specific components
+  - `layout/` - Layout and navigation components
+  - `forms/` - Form components
+  - `ui/` - Generic UI components (ErrorBoundary, LoadingSpinner)
+- **Pages**: [src/pages/](mdc:src/pages/) - Route-level page components
+
+### Infrastructure Layer
+- **Hooks**: [src/hooks/](mdc:src/hooks/) - Custom React hooks
+- **Utils**: [src/utils/](mdc:src/utils/) - Utility functions
+- **Styles**: [src/styles/](mdc:src/styles/) - Global styles and Bootstrap customizations
+- **Types**: [src/types/](mdc:src/types/) - TypeScript type definitions
+
+## Technology Stack
+- **Framework**: React 18 with functional components and hooks
+- **Build Tool**: Vite 5.x for fast development and optimized builds
+- **Styling**: Bootstrap 5.3.2 + react-bootstrap (NO Tailwind CSS)
+- **Routing**: React Router DOM v6
+- **State Management**: React Query for server state, React Context for client state
+- **Forms**: React Hook Form for form handling
+- **HTTP Client**: Axios for API communication
+- **Testing**: Vitest + React Testing Library + jsdom
+- **Code Quality**: ESLint + Prettier
+
+## Package Manager
+- Use **pnpm** as specified in [package.json](mdc:package.json)
+- Node.js >= 18.0.0 required
+- Commands: `pnpm dev`, `pnpm build`, `pnpm test`
+
+## Development Workflow
+1. Start development: `pnpm dev` (runs on port 5173)
+2. API proxy configured to connect to backend on port 8000
+3. Hot module replacement (HMR) enabled for fast development
+4. ESLint and Prettier configured for code quality
+
+## Deployment Targets
+- **Netlify**: Primary deployment platform with [netlify.toml](mdc:netlify.toml)
+- **Docker**: Container deployment with [Dockerfile](mdc:Dockerfile) and [nginx.conf](mdc:nginx.conf)
+- **Static Build**: SPA build in `dist/` directory
+
+## Environment Configuration
+- Development: [env.example](mdc:env.example)
+- Environment variables must be prefixed with `VITE_`
+- API base URL configurable via `VITE_API_BASE_URL`

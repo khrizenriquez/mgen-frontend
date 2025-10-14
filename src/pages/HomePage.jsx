@@ -4,38 +4,41 @@
  */
 import { Link } from 'react-router-dom'
 import { Card, Container, Row, Col, Button, Badge } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 export default function HomePage() {
+  const { t } = useTranslation()
+
   // Información específica de Más Generosidad
   const impactStats = [
-    { icon: 'bi-heart-fill', value: 'Q45,250', label: 'Donado este mes', color: 'text-danger' },
-    { icon: 'bi-people-fill', value: '500+', label: 'Niños evangelizados/año', color: 'text-primary' },
-    { icon: 'bi-mortarboard-fill', value: '3+', label: 'Escuelas beneficiadas', color: 'text-success' },
-    { icon: 'bi-award-fill', value: 'Becas', label: 'Programa en desarrollo', color: 'text-warning' }
+    { icon: 'bi-heart-fill', value: 'Q45,250', label: t('home.impact.stats.donatedThisMonth'), color: 'text-danger' },
+    { icon: 'bi-people-fill', value: '500+', label: t('home.impact.stats.childrenEvangelized'), color: 'text-primary' },
+    { icon: 'bi-mortarboard-fill', value: '3+', label: t('home.impact.stats.schoolsBenefited'), color: 'text-success' },
+    { icon: 'bi-award-fill', value: t('home.impact.stats.scholarships'), label: t('home.impact.stats.scholarships'), color: 'text-warning' }
   ]
 
   const programs = [
     {
       id: 1,
-      name: 'Evangelización Infantil',
-      description: 'Enseñamos valores religiosos a niños, impactando positivamente su desarrollo integral.',
-      impact: 'Más de 500 niños al año',
+      name: t('home.programs.evangelization.name'),
+      description: t('home.programs.evangelization.description'),
+      impact: t('home.programs.evangelization.impact'),
       icon: 'bi-book',
       color: 'primary'
     },
     {
       id: 2,
-      name: 'Programa de Alimentación',
-      description: 'Proporcionamos alimentos nutritivos a escuelas para combatir la desnutrición infantil.',
-      impact: 'Más de 3 escuelas por año',
+      name: t('home.programs.nutrition.name'),
+      description: t('home.programs.nutrition.description'),
+      impact: t('home.programs.nutrition.impact'),
       icon: 'bi-egg-fried',
       color: 'success'
     },
     {
       id: 3,
-      name: 'Becas Escolares',
-      description: 'Otorgamos becas educativas a niños necesitados para garantizar su acceso a la educación.',
-      impact: 'Programa en desarrollo',
+      name: t('home.programs.scholarships.name'),
+      description: t('home.programs.scholarships.description'),
+      impact: t('home.programs.scholarships.impact'),
       icon: 'bi-mortarboard',
       color: 'info'
     }
@@ -56,14 +59,13 @@ export default function HomePage() {
           <Row className="align-items-center">
             <Col lg={6} className="mb-4 mb-lg-0">
               <h1 className="display-4 fw-bold mb-3">
-                Ayudar sin esperar nada a cambio
+                {t('home.hero.title')}
               </h1>
               <p className="lead mb-4">
-                Fomentamos la generosidad en la sociedad en beneficio de los niños de Guatemala. 
-                Tu apoyo puede ser la fuerza detrás de un cambio significativo.
+                {t('home.hero.subtitle')}
               </p>
               <div className="d-flex gap-3 flex-wrap">
-                <Button 
+                <Button
                   as={Link}
                   to="/donate"
                   variant="light"
@@ -71,9 +73,9 @@ export default function HomePage() {
                   className="d-flex align-items-center fw-semibold"
                 >
                   <i className="bi bi-heart-fill me-2"></i>
-                  Donar ahora
+                  {t('home.hero.donateNow')}
                 </Button>
-                <Button 
+                <Button
                   as={Link}
                   to="/donations"
                   variant="outline-light"
@@ -81,7 +83,7 @@ export default function HomePage() {
                   className="d-flex align-items-center"
                 >
                   <i className="bi bi-list-ul me-2"></i>
-                  Ver donaciones
+                  {t('home.hero.viewDonations')}
                 </Button>
               </div>
             </Col>
@@ -101,8 +103,8 @@ export default function HomePage() {
       <section className="mb-5">
         <Container>
           <div className="text-center mb-4">
-            <h2 className="fw-bold mb-3">Nuestro impacto</h2>
-            <p className="text-muted">Números que reflejan el cambio que estamos generando</p>
+            <h2 className="fw-bold mb-3">{t('home.impact.title')}</h2>
+            <p className="text-muted">{t('home.impact.subtitle')}</p>
           </div>
           <Row className="g-4">
             {impactStats.map((stat, index) => (
@@ -125,42 +127,40 @@ export default function HomePage() {
         <Container>
           <Row className="align-items-center">
             <Col lg={6} className="mb-4 mb-lg-0">
-              <h2 className="fw-bold mb-4">¿Quiénes somos?</h2>
+              <h2 className="fw-bold mb-4">{t('home.about.title')}</h2>
               <p className="text-muted mb-4">
-                Somos una organización comprometida con fomentar la generosidad en Guatemala. 
-                Creemos firmemente que la generosidad puede ser la fuerza detrás de un cambio 
-                significativo en la vida de los niños y adolescentes de escasos recursos.
+                {t('home.about.description')}
               </p>
               <div className="mb-4">
                 <div className="d-flex align-items-start mb-3">
                   <i className="bi bi-check-circle-fill text-success me-3 mt-1"></i>
                   <div>
-                    <h6 className="fw-bold mb-1">Misión clara</h6>
+                    <h6 className="fw-bold mb-1">{t('home.about.mission.title')}</h6>
                     <p className="text-muted mb-0 small">
-                      Hacer un poco más dulce la vida de los niños y adolescentes de escasos recursos.
+                      {t('home.about.mission.description')}
                     </p>
                   </div>
                 </div>
                 <div className="d-flex align-items-start mb-3">
                   <i className="bi bi-check-circle-fill text-success me-3 mt-1"></i>
                   <div>
-                    <h6 className="fw-bold mb-1">Transparencia</h6>
+                    <h6 className="fw-bold mb-1">{t('home.about.transparency.title')}</h6>
                     <p className="text-muted mb-0 small">
-                      Cada donación se utiliza directamente para beneficio de los niños.
+                      {t('home.about.transparency.description')}
                     </p>
                   </div>
                 </div>
                 <div className="d-flex align-items-start">
                   <i className="bi bi-check-circle-fill text-success me-3 mt-1"></i>
                   <div>
-                    <h6 className="fw-bold mb-1">Impacto medible</h6>
+                    <h6 className="fw-bold mb-1">{t('home.about.impact.title')}</h6>
                     <p className="text-muted mb-0 small">
-                      Reportamos constantemente sobre el progreso y resultados alcanzados.
+                      {t('home.about.impact.description')}
                     </p>
                   </div>
                 </div>
               </div>
-              <Button 
+              <Button
                 as={Link}
                 to="/donate"
                 variant="primary"
@@ -168,14 +168,14 @@ export default function HomePage() {
                 className="fw-semibold"
               >
                 <i className="bi bi-heart-fill me-2"></i>
-                Únete a nuestra causa
+                {t('home.about.joinCause')}
               </Button>
             </Col>
             <Col lg={6}>
               <div className="position-relative">
                 <img 
                   src="/api/placeholder/500/400" 
-                  alt="Niños beneficiados por Más Generosidad"
+                  alt={t('home.about.imageAlt')}
                   className="img-fluid rounded shadow"
                 />
               </div>
@@ -188,9 +188,9 @@ export default function HomePage() {
       <section className="bg-light py-5 mb-5 rounded">
         <Container>
           <div className="text-center mb-5">
-            <h2 className="fw-bold mb-3">Nuestros programas</h2>
+            <h2 className="fw-bold mb-3">{t('home.programs.title')}</h2>
             <p className="lead text-muted">
-              Conoce las formas en que estamos transformando vidas
+              {t('home.programs.subtitle')}
             </p>
           </div>
           
@@ -220,8 +220,8 @@ export default function HomePage() {
       <section className="mb-5">
         <Container>
           <div className="text-center mb-4">
-            <h2 className="fw-bold mb-3">Empresas que nos apoyan</h2>
-            <p className="text-muted">Organizaciones generosas que hacen posible nuestro trabajo</p>
+            <h2 className="fw-bold mb-3">{t('home.partners.title')}</h2>
+            <p className="text-muted">{t('home.partners.subtitle')}</p>
           </div>
           <Row className="align-items-center justify-content-center g-4">
             {partners.map((partner, index) => (
@@ -244,65 +244,65 @@ export default function HomePage() {
       <section className="mb-5">
         <Container>
           <div className="text-center mb-5">
-            <h2 className="fw-bold mb-3">¿Cómo puedes ayudar?</h2>
+            <h2 className="fw-bold mb-3">{t('home.help.title')}</h2>
             <p className="lead text-muted">
-              Múltiples formas de contribuir al bienestar de los niños
+              {t('home.help.subtitle')}
             </p>
           </div>
-          
+
           <Row className="g-4">
             <Col md={4} className="text-center">
-              <div className="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
+              <div className="bg-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{ width: '80px', height: '80px' }}>
                 <i className="bi bi-currency-dollar text-white" style={{ fontSize: '2rem' }}></i>
               </div>
-              <h5 className="fw-bold mb-3">Donación monetaria</h5>
+              <h5 className="fw-bold mb-3">{t('home.help.monetary.title')}</h5>
               <p className="text-muted mb-3">
-                Tu contribución económica nos permite comprar alimentos, materiales educativos y recursos necesarios.
+                {t('home.help.monetary.description')}
               </p>
-              <Button 
+              <Button
                 as={Link}
                 to="/donate"
                 variant="primary"
                 className="fw-semibold"
               >
-                Donar dinero
+                {t('home.help.monetary.button')}
               </Button>
             </Col>
-            
+
             <Col md={4} className="text-center">
-              <div className="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
+              <div className="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{ width: '80px', height: '80px' }}>
                 <i className="bi bi-clock text-white" style={{ fontSize: '2rem' }}></i>
               </div>
-              <h5 className="fw-bold mb-3">Voluntariado</h5>
+              <h5 className="fw-bold mb-3">{t('home.help.volunteer.title')}</h5>
               <p className="text-muted mb-3">
-                Comparte tu tiempo y habilidades ayudando directamente en nuestras actividades y programas.
+                {t('home.help.volunteer.description')}
               </p>
-              <Button 
+              <Button
                 variant="outline-success"
                 className="fw-semibold"
                 disabled
               >
-                Próximamente
+                {t('common.buttons.comingSoon')}
               </Button>
             </Col>
-            
+
             <Col md={4} className="text-center">
-              <div className="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
+              <div className="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{ width: '80px', height: '80px' }}>
                 <i className="bi bi-box text-white" style={{ fontSize: '2rem' }}></i>
               </div>
-              <h5 className="fw-bold mb-3">Donación en especie</h5>
+              <h5 className="fw-bold mb-3">{t('home.help.inKind.title')}</h5>
               <p className="text-muted mb-3">
-                Dona alimentos, útiles escolares, juguetes y otros artículos que beneficien a los niños.
+                {t('home.help.inKind.description')}
               </p>
-              <Button 
+              <Button
                 variant="outline-info"
                 className="fw-semibold"
                 disabled
               >
-                Próximamente
+                {t('common.buttons.comingSoon')}
               </Button>
             </Col>
           </Row>
@@ -314,22 +314,22 @@ export default function HomePage() {
         <Container>
           <Card className="border-0 bg-primary text-white">
             <Card.Body className="py-5">
-              <h2 className="fw-bold mb-3">¿Tienes preguntas?</h2>
+              <h2 className="fw-bold mb-3">{t('home.contact.title')}</h2>
               <p className="lead mb-4">
-                Estamos aquí para ayudarte. Contáctanos para cualquier duda o consulta.
+                {t('home.contact.subtitle')}
               </p>
               <div className="d-flex justify-content-center gap-4 mb-4">
                 <div className="d-flex align-items-center">
                   <i className="bi bi-telephone-fill me-2"></i>
-                  <span>+(502) 5468 3386</span>
+                  <span>{t('home.contact.phone')}</span>
                 </div>
                 <div className="d-flex align-items-center">
                   <i className="bi bi-envelope-fill me-2"></i>
-                  <span>info@masgenerosidad.org</span>
+                  <span>{t('home.contact.email')}</span>
                 </div>
               </div>
               <div className="d-flex justify-content-center gap-3">
-                <Button 
+                <Button
                   as={Link}
                   to="/donate"
                   variant="light"
@@ -337,15 +337,15 @@ export default function HomePage() {
                   className="fw-semibold"
                 >
                   <i className="bi bi-heart-fill me-2"></i>
-                  Hacer donación
+                  {t('common.buttons.makeDonation')}
                 </Button>
-                <Button 
+                <Button
                   variant="outline-light"
                   size="lg"
                   onClick={() => window.open('tel:+50254683386')}
                 >
                   <i className="bi bi-telephone me-2"></i>
-                  Llamar ahora
+                  {t('common.buttons.callNow')}
                 </Button>
               </div>
             </Card.Body>

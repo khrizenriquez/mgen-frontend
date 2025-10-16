@@ -20,11 +20,7 @@ export default function UserDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const upcomingEvents = [
-    { id: 1, title: 'Campaña de Navidad', date: '2024-12-01', type: 'campaign', description: 'Ayuda a los niños en Navidad' },
-    { id: 2, title: 'Día del Niño', date: '2024-04-30', type: 'event', description: 'Celebración especial para los niños' },
-    { id: 3, title: 'Programa de Becas', date: '2024-03-15', type: 'program', description: 'Apoyo educativo continuo' },
-  ]
+  const [upcomingEvents, setUpcomingEvents] = useState([])
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -36,14 +32,29 @@ export default function UserDashboardPage() {
         const statsResponse = await api.get('/dashboard/stats')
         const dashboardData = statsResponse.data
 
+        // Load user preferences
+        const prefsResponse = await api.get('/user/preferences')
+        const prefsData = prefsResponse.data
+
+        // Load user levels
+        const levelsResponse = await api.get('/user/levels')
+        const levelsData = levelsResponse.data
+
+        // Load upcoming events
+        const eventsResponse = await api.get('/dashboard/events/upcoming')
+        const eventsData = eventsResponse.data
+
         setUserStats({
           totalDonations: dashboardData.stats.total_donations || 0,
           totalAmount: dashboardData.stats.total_amount_gtq || 0,
-          favoriteCause: 'Programa General',
+          favoriteCause: prefsData.favorite_cause || 'Programa General',
           memberSince: new Date(dashboardData.stats.member_since || new Date()),
-          nextMilestone: 3000.00, // This could be configurable
+          nextMilestone: levelsData.next_level_threshold || 3000.00,
           currentProgress: dashboardData.stats.total_amount_gtq || 0
         })
+
+        // Set upcoming events
+        setUpcomingEvents(eventsData || [])
 
         // Set recent activity
         setRecentActivity(dashboardData.recent_activity || [])
@@ -267,7 +278,7 @@ export default function UserDashboardPage() {
                 <h6 className="mb-0">Próximos Eventos</h6>
               </Card.Header>
               <Card.Body>
-                {upcomingEvents.map((event) => (
+                {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
                   <div key={event.id} className="d-flex mb-3 pb-3 border-bottom">
                     <div className="flex-shrink-0 me-3">
                       <i className={`bi ${getEventIcon(event.type)} fs-4`}></i>
@@ -278,7 +289,12 @@ export default function UserDashboardPage() {
                       <small className="text-primary">{new Date(event.date).toLocaleDateString('es-GT')}</small>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center text-muted py-3">
+                    <i className="bi bi-calendar-x me-2"></i>
+                    No hay eventos próximos
+                  </div>
+                )}
                 <Button variant="outline-primary" size="sm" className="w-100">
                   Ver todos los eventos
                 </Button>

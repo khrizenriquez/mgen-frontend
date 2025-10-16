@@ -112,20 +112,19 @@ export function AppProvider({ children }) {
 
     loadStatistics: async () => {
       try {
-        // Temporarily disabled until backend endpoints are ready
-        // const stats = await donationService.getStatistics()
-        // dispatch({ type: ActionTypes.SET_STATISTICS, payload: stats })
-        
-        // Mock statistics for now
-        const mockStats = {
-          total_amount_completed: 45250,
-          total_amount_pending: 12500,
-          count_completed: 342,
-          success_rate: 89.5
-        }
-        dispatch({ type: ActionTypes.SET_STATISTICS, payload: mockStats })
+        // Load real statistics from API
+        const response = await fetch('/api/v1/donations/stats')
+        const stats = await response.json()
+        dispatch({ type: ActionTypes.SET_STATISTICS, payload: stats })
       } catch (error) {
         console.error('Error loading statistics:', error)
+        // Fallback to empty stats
+        dispatch({ type: ActionTypes.SET_STATISTICS, payload: {
+          total_amount_completed: 0,
+          total_amount_pending: 0,
+          count_completed: 0,
+          success_rate: 0
+        } })
       }
     },
 

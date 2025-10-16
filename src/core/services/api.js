@@ -23,37 +23,9 @@ const api = axios.create({
   },
 })
 
-// Override the get method to include mock fallback
+// Use the original get method (no mock fallbacks needed)
 const originalGet = api.get.bind(api)
-api.get = async (url, config = {}) => {
-  try {
-    // Check if backend is available
-    const isBackendHealthy = await healthCheck()
-    if (!isBackendHealthy) {
-      console.warn('Backend not available, using mock data for:', url)
-
-      // Return mock data for known endpoints
-      if (url === '/dashboard/stats') {
-        return { data: getMockDashboardData() }
-      }
-
-      // For other endpoints, throw error to show fallback message
-      throw new Error('Backend not available')
-    }
-
-    // Backend is available, make real request
-    return await originalGet(url, config)
-  } catch (error) {
-    // If it's a network error and we haven't tried mock data yet
-    if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_RESET') {
-      if (url === '/dashboard/stats') {
-        console.warn('Network error, falling back to mock dashboard data')
-        return { data: getMockDashboardData() }
-      }
-    }
-    throw error
-  }
-}
+api.get = originalGet
 
 // Request interceptor
 api.interceptors.request.use(
@@ -160,50 +132,7 @@ export const healthCheck = async () => {
   }
 }
 
-// Mock data for development
-const getMockDashboardData = () => ({
-  stats: {
-    total_donations: 12,
-    total_amount_gtq: 2850.50,
-    monthly_average: 237.54,
-    favorite_program: 'Programa General',
-    member_since: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
-    donation_streak: 5,
-    my_donations: [
-      {
-        id: 'don-001',
-        amount_gtq: 185.00,
-        status: 'APPROVED',
-        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        donor_email: 'donorseminario@test.com'
-      },
-      {
-        id: 'don-002',
-        amount_gtq: 250.00,
-        status: 'APPROVED',
-        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        donor_email: 'donorseminario@test.com'
-      }
-    ]
-  },
-  recent_activity: [
-    {
-      type: 'donation',
-      message: 'Donación de Q185 procesada exitosamente',
-      timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      type: 'system_donation',
-      message: 'Tu donación ayudó a 3 niños esta semana',
-      timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      type: 'view',
-      message: 'Viste las estadísticas de impacto',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ]
-})
+// API endpoints are now fully dynamic - no mock data needed
 
 // Generic API methods
 export const apiService = {

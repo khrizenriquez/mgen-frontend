@@ -22,18 +22,14 @@ export default function DonorDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const impactMetrics = [
-    { label: 'Niños beneficiados', value: donorStats.impactChildren, icon: 'bi-people', color: 'success' },
-    { label: 'Comidas proporcionadas', value: 2250, icon: 'bi-egg-fried', color: 'warning' },
-    { label: 'Becas otorgadas', value: 3, icon: 'bi-mortarboard', color: 'info' },
-    { label: 'Horas de evangelización', value: 180, icon: 'bi-book', color: 'primary' },
-  ]
+  const [impactMetrics, setImpactMetrics] = useState([
+    { label: 'Niños beneficiados', value: 0, icon: 'bi-people', color: 'success' },
+    { label: 'Comidas proporcionadas', value: 0, icon: 'bi-egg-fried', color: 'warning' },
+    { label: 'Becas otorgadas', value: 0, icon: 'bi-mortarboard', color: 'info' },
+    { label: 'Horas de evangelización', value: 0, icon: 'bi-book', color: 'primary' },
+  ])
 
-  const upcomingPrograms = [
-    { id: 1, name: 'Campaña de Verano', description: 'Apoyo estival para niños', progress: 65, goal: 15000.00, current: 9750.00 },
-    { id: 2, name: 'Programa de Becas 2024', description: 'Educación para el futuro', progress: 40, goal: 25000.00, current: 10000.00 },
-    { id: 3, name: 'Alimentación Escolar', description: 'Nutrición para el aprendizaje', progress: 80, goal: 12000.00, current: 9600.00 },
-  ]
+  const [activePrograms, setActivePrograms] = useState([])
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -45,16 +41,39 @@ export default function DonorDashboardPage() {
         const statsResponse = await api.get('/dashboard/stats')
         const dashboardData = statsResponse.data
 
+        // Load impact metrics
+        const impactResponse = await api.get('/dashboard/impact')
+        const impactData = impactResponse.data
+
+        // Load active programs
+        const programsResponse = await api.get('/dashboard/programs/active')
+        const programsData = programsResponse.data
+
+        // Load user levels for next reward
+        const levelsResponse = await api.get('/user/levels')
+        const levelsData = levelsResponse.data
+
         setDonorStats({
           totalDonations: dashboardData.stats.total_donations || 0,
           totalAmount: dashboardData.stats.total_amount_gtq || 0,
           monthlyAverage: dashboardData.stats.monthly_average || 0,
           favoriteProgram: dashboardData.stats.favorite_program || 'Programa General',
-          impactChildren: 45, // This could come from a separate API
+          impactChildren: impactData.children_impacted || 0,
           memberSince: new Date(dashboardData.stats.member_since || new Date()),
           donationStreak: dashboardData.stats.donation_streak || 0,
-          nextReward: 'Donante Platino'
+          nextReward: levelsData.next_level || 'Donante Platino'
         })
+
+        // Update impact metrics with real data
+        setImpactMetrics([
+          { label: 'Niños beneficiados', value: impactData.children_impacted || 0, icon: 'bi-people', color: 'success' },
+          { label: 'Comidas proporcionadas', value: impactData.meals_provided || 0, icon: 'bi-egg-fried', color: 'warning' },
+          { label: 'Becas otorgadas', value: impactData.scholarships_awarded || 0, icon: 'bi-mortarboard', color: 'info' },
+          { label: 'Horas de evangelización', value: impactData.evangelism_hours || 0, icon: 'bi-book', color: 'primary' },
+        ])
+
+        // Set active programs
+        setActivePrograms(programsData || [])
 
         // Load user's donations
         setMyDonations(dashboardData.stats.my_donations || [])
@@ -287,26 +306,31 @@ export default function DonorDashboardPage() {
               </Card.Body>
             </Card>
 
-            {/* Upcoming Programs */}
+            {/* Active Programs */}
             <Card>
               <Card.Header>
                 <h6 className="mb-0">Programas Activos</h6>
               </Card.Header>
               <Card.Body>
-                {upcomingPrograms.map((program) => (
+                {activePrograms.length > 0 ? activePrograms.map((program) => (
                   <div key={program.id} className="mb-3 pb-3 border-bottom">
                     <div className="d-flex justify-content-between align-items-start mb-2">
                       <h6 className="mb-1 small">{program.name}</h6>
-                      <small className="text-muted">{program.progress}%</small>
+                      <small className="text-muted">{program.progress_percentage}%</small>
                     </div>
                     <p className="text-muted small mb-2">{program.description}</p>
-                    <ProgressBar now={program.progress} size="sm" className="mb-2" />
+                    <ProgressBar now={program.progress_percentage} size="sm" className="mb-2" />
                     <div className="d-flex justify-content-between small">
-                      <span className="text-success">Q{program.current.toLocaleString()}</span>
-                      <span className="text-muted">Meta: Q{program.goal.toLocaleString()}</span>
+                      <span className="text-success">Q{program.current_amount.toLocaleString()}</span>
+                      <span className="text-muted">Meta: Q{program.goal_amount.toLocaleString()}</span>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center text-muted py-3">
+                    <i className="bi bi-info-circle me-2"></i>
+                    No hay programas activos actualmente
+                  </div>
+                )}
                 <Button variant="outline-success" size="sm" className="w-100" as={Link} to="/donor/programs">
                   Ver todos los programas
                 </Button>

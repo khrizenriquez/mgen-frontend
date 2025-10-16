@@ -14,7 +14,12 @@ export default function AdminDashboardPage() {
     totalDonations: 0,
     totalAmount: 0,
     pendingDonations: 0,
-    systemHealth: 100
+    systemHealth: 100,
+    growthMetrics: {
+      users_growth_percentage: 0,
+      donations_growth_percentage: 0,
+      amount_growth_percentage: 0
+    }
   })
   const [recentUsers, setRecentUsers] = useState([])
   const [recentDonations, setRecentDonations] = useState([])
@@ -37,7 +42,12 @@ export default function AdminDashboardPage() {
           totalDonations: dashboardData.stats.total_donations || 0,
           totalAmount: dashboardData.stats.total_amount_gtq || 0,
           pendingDonations: dashboardData.stats.pending_donations || 0,
-          systemHealth: 98 // This could come from a health check API
+          systemHealth: dashboardData.stats.system_health || 98,
+          growthMetrics: dashboardData.stats.growth_metrics || {
+            users_growth_percentage: 0,
+            donations_growth_percentage: 0,
+            amount_growth_percentage: 0
+          }
         })
 
         // Load recent users and donations (already included in dashboard stats for admin)
@@ -148,7 +158,7 @@ export default function AdminDashboardPage() {
                 <h3 className="fw-bold mb-1">{stats.totalUsers.toLocaleString()}</h3>
                 <p className="text-muted small mb-2">Usuarios Totales</p>
                 <div className="text-success small">
-                  <i className="bi bi-arrow-up"></i> +12% este mes
+                  <i className="bi bi-arrow-up"></i> +{stats.growthMetrics.users_growth_percentage.toFixed(1)}% este mes
                 </div>
               </Card.Body>
             </Card>
@@ -163,7 +173,7 @@ export default function AdminDashboardPage() {
                 <h3 className="fw-bold mb-1">Q{stats.totalAmount.toLocaleString()}</h3>
                 <p className="text-muted small mb-2">Total Donado</p>
                 <div className="text-success small">
-                  <i className="bi bi-arrow-up"></i> +8% este mes
+                  <i className="bi bi-arrow-up"></i> +{stats.growthMetrics.amount_growth_percentage.toFixed(1)}% este mes
                 </div>
               </Card.Body>
             </Card>

@@ -46,6 +46,9 @@ FROM nginx:alpine
 # Copy build files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Copy Netlify redirects file for SPA routing
+COPY _redirects /usr/share/nginx/html/_redirects
+
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

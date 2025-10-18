@@ -67,7 +67,7 @@ export default function DashboardLayout({ children }) {
           { name: 'Mi Panel', href: '/user-dashboard', icon: 'bi-speedometer2' },
           { name: 'Ver Donaciones', href: '/donations', icon: 'bi-list-ul', external: true },
           { name: 'Estadísticas', href: '/stats', icon: 'bi-graph-up', external: true },
-          { name: 'Perfil', href: '/user/profile', icon: 'bi-person' },
+          { name: 'Perfil', href: '/settings', icon: 'bi-person' },
         ]
     }
   }

@@ -60,11 +60,11 @@ export default function AdminSettingsPage() {
       setUser(currentUser)
 
       // Load user preferences
-      const prefsResponse = await api.get('/user/preferences')
+      const prefsResponse = await api.get('/users/me/preferences')
       const prefsData = prefsResponse.data
 
       // Load user profile data
-      const profileResponse = await api.get('/user/profile')
+      const profileResponse = await api.get('/users/me/profile')
       const profileData = profileResponse.data
 
       setSettings({
@@ -116,7 +116,7 @@ export default function AdminSettingsPage() {
       setSaving(true)
       setError(null)
 
-      await api.put('/user/profile', {
+      await api.put('/users/me/profile', {
         first_name: settings.first_name,
         last_name: settings.last_name,
         phone: settings.phone,
@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
       setSaving(true)
       setError(null)
 
-      await api.put('/user/preferences', {
+      await api.put('/users/me/preferences', {
         communication_preferences: {
           email_notifications: settings.email_notifications,
           sms_notifications: settings.sms_notifications,

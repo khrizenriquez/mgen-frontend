@@ -125,7 +125,9 @@ api.interceptors.response.use(
 // Health check utility
 export const healthCheck = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/health`)
+    // Remove '/api/v1' from base URL for health check
+    const baseUrl = API_BASE_URL.replace('/api/v1', '')
+    const response = await fetch(`${baseUrl}/health`)
     return response.ok
   } catch {
     return false

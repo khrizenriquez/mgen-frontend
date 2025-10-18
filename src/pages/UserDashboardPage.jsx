@@ -33,7 +33,7 @@ export default function UserDashboardPage() {
         const dashboardData = statsResponse.data
 
         // Load user preferences
-        const prefsResponse = await api.get('/user/preferences')
+        const prefsResponse = await api.get('/users/me/preferences')
         const prefsData = prefsResponse.data
 
         // Load user levels

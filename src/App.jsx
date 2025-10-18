@@ -23,6 +23,10 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminUsersPage from './pages/AdminUsersPage'
+import AdminDonationsPage from './pages/AdminDonationsPage'
+import AdminReportsPage from './pages/AdminReportsPage'
+import AdminSettingsPage from './pages/AdminSettingsPage'
 import UserDashboardPage from './pages/UserDashboardPage'
 import DonorDashboardPage from './pages/DonorDashboardPage'
 import DonorProfilePage from './pages/DonorProfilePage'
@@ -67,6 +71,28 @@ function App() {
 
           {/* Unified dashboard route - content changes based on user role */}
           <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          } />
+
+          {/* Admin specific routes */}
+          <Route path="/admin/users" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/donations" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/reports" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/settings" element={
             <ProtectedRoute>
               <DashboardLayout />
             </ProtectedRoute>

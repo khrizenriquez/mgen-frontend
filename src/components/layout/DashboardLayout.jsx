@@ -11,6 +11,10 @@ import AuthService from '../../core/services/AuthService'
 import AdminDashboardPage from '../../pages/AdminDashboardPage'
 import UserDashboardPage from '../../pages/UserDashboardPage'
 import DonorDashboardPage from '../../pages/DonorDashboardPage'
+import AdminUsersPage from '../../pages/AdminUsersPage'
+import AdminDonationsPage from '../../pages/AdminDonationsPage'
+import AdminReportsPage from '../../pages/AdminReportsPage'
+import AdminSettingsPage from '../../pages/AdminSettingsPage'
 
 export default function DashboardLayout({ children }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -72,17 +76,32 @@ export default function DashboardLayout({ children }) {
   const userName = currentUser?.email || 'Usuario'
   const navigationItems = getNavigationItems(userRole)
 
-  // Render the appropriate dashboard component based on role
+  // Render the appropriate dashboard component based on role and current path
   const renderDashboardContent = () => {
-    switch (userRole) {
-      case 'ADMIN':
+    const path = location.pathname
+
+    // Admin pages
+    if (userRole === 'ADMIN') {
+      if (path === '/admin/users') {
+        return <AdminUsersPage />
+      } else if (path === '/admin/donations') {
+        return <AdminDonationsPage />
+      } else if (path === '/admin/reports') {
+        return <AdminReportsPage />
+      } else if (path === '/admin/settings') {
+        return <AdminSettingsPage />
+      } else {
         return <AdminDashboardPage />
-      case 'DONOR':
-        return <DonorDashboardPage />
-      case 'USER':
-      default:
-        return <UserDashboardPage />
+      }
     }
+
+    // Donor pages
+    if (userRole === 'DONOR') {
+      return <DonorDashboardPage />
+    }
+
+    // User pages (default)
+    return <UserDashboardPage />
   }
 
   const handleLogout = async () => {

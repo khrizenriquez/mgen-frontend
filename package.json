@@ -6,7 +6,8 @@
   "description": "Donations Management System - Frontend with hexagonal architecture",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp _redirects dist/",
+    "postbuild": "cp _redirects dist/",
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
     "preview": "vite preview",

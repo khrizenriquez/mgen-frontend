@@ -16,11 +16,6 @@
   VITE_ENABLE_ANALYTICS = "false"
   VITE_ENABLE_ERROR_REPORTING = "true"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # Add security headers
 [[headers]]
   for = "/*"

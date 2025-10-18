@@ -22,6 +22,19 @@ class AuthService {
       const accessToken = localStorage.getItem('accessToken')
       const refreshToken = localStorage.getItem('refreshToken')
 
+      // Check for mock tokens and clean them
+      if (accessToken && accessToken.startsWith('mock_access_token_')) {
+        console.warn('Found mock access token on app initialization, clearing invalid tokens')
+        this.clearTokens()
+        return
+      }
+
+      if (refreshToken && refreshToken.startsWith('mock_refresh_token_')) {
+        console.warn('Found mock refresh token on app initialization, clearing invalid tokens')
+        this.clearTokens()
+        return
+      }
+
       if (userData && accessToken) {
         this.currentUser = JSON.parse(userData)
         this.notifyListeners()
@@ -67,14 +80,32 @@ class AuthService {
    * Get stored access token
    */
   getAccessToken() {
-    return localStorage.getItem('accessToken')
+    const token = localStorage.getItem('accessToken')
+
+    // Detect and clean mock tokens from development
+    if (token && token.startsWith('mock_access_token_')) {
+      console.warn('Detected mock access token, clearing invalid tokens')
+      this.clearTokens()
+      return null
+    }
+
+    return token
   }
 
   /**
    * Get stored refresh token
    */
   getRefreshToken() {
-    return localStorage.getItem('refreshToken')
+    const token = localStorage.getItem('refreshToken')
+
+    // Detect and clean mock tokens from development
+    if (token && token.startsWith('mock_refresh_token_')) {
+      console.warn('Detected mock refresh token, clearing invalid tokens')
+      this.clearTokens()
+      return null
+    }
+
+    return token
   }
 
   /**
@@ -295,6 +326,37 @@ class AuthService {
     }
     // Return the first role (as per user preference for single role handling)
     return this.currentUser.roles[0].toLowerCase()
+  }
+
+  /**
+   * Clean mock tokens from localStorage (for development/debugging)
+   */
+  cleanMockTokens() {
+    const accessToken = localStorage.getItem('accessToken')
+    const refreshToken = localStorage.getItem('refreshToken')
+
+    let cleaned = false
+
+    if (accessToken && accessToken.startsWith('mock_access_token_')) {
+      console.log('Cleaning mock access token')
+      localStorage.removeItem('accessToken')
+      cleaned = true
+    }
+
+    if (refreshToken && refreshToken.startsWith('mock_refresh_token_')) {
+      console.log('Cleaning mock refresh token')
+      localStorage.removeItem('refreshToken')
+      cleaned = true
+    }
+
+    if (cleaned) {
+      localStorage.removeItem('currentUser')
+      this.currentUser = null
+      this.notifyListeners()
+      console.log('Mock tokens cleaned successfully. User logged out.')
+    }
+
+    return cleaned
   }
 
   /**

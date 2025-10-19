@@ -1,5 +1,7 @@
 # mgen-frontend
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/khrizenriquez/mgen-frontend)
+
 Sistema de gestión de donaciones -
 
 ## 🚀 Inicio Rápido

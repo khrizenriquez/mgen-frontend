@@ -17,6 +17,8 @@ import HomePage from './pages/HomePage'
 import DonationsPage from './pages/DonationsPage'
 import CreateDonationPage from './pages/CreateDonationPage'
 import DonationDetailPage from './pages/DonationDetailPage'
+import DonationPaymentPage from './pages/DonationPaymentPage'
+import PaymentSuccessPage from './pages/PaymentSuccessPage'
 import StatsPage from './pages/StatsPage'
 import DonatePage from './pages/DonatePage'
 import LoginPage from './pages/LoginPage'
@@ -51,6 +53,18 @@ function App() {
           <Route path="/donations/:id" element={
             <Layout>
               <DonationDetailPage />
+            </Layout>
+          } />
+          <Route path="/donations/:donationId/payment" element={
+            <ProtectedRoute>
+              <Layout>
+                <DonationPaymentPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/payment/success" element={
+            <Layout>
+              <PaymentSuccessPage />
             </Layout>
           } />
           <Route path="/donate" element={

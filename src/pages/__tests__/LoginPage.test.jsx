@@ -54,6 +54,18 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeInTheDocument()
   })
 
+  test('displays forgot password link with correct text', () => {
+    render(
+      <TestWrapper>
+        <LoginPage />
+      </TestWrapper>
+    )
+
+    const forgotPasswordLink = screen.getByText('¿Olvidaste tu contraseña?')
+    expect(forgotPasswordLink).toBeInTheDocument()
+    expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password')
+  })
+
   test('shows validation errors for empty fields', async () => {
     render(
       <TestWrapper>
@@ -188,6 +200,6 @@ describe('LoginPage', () => {
     )
 
     expect(screen.getByRole('link', { name: /crear cuenta nueva/i })).toHaveAttribute('href', '/register')
-    expect(screen.getByRole('link', { name: /o regresa al paso anterior/i })).toHaveAttribute('href', '/forgot-password')
+    expect(screen.getByRole('link', { name: /¿Olvidaste tu contraseña\?/i })).toHaveAttribute('href', '/forgot-password')
   })
 })

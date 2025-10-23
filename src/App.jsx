@@ -48,6 +48,13 @@ function App() {
               <DonationsPage />
             </Layout>
           } />
+          <Route path="/donations/new" element={
+            <ProtectedRoute>
+              <Layout>
+                <CreateDonationPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
           <Route path="/donations/:id" element={
             <Layout>
               <DonationDetailPage />

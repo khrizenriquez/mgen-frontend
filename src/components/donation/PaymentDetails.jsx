@@ -69,14 +69,21 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
     // Expiry date validation
     if (!formData.expiryDate) {
       newErrors.expiryDate = 'La fecha de expiración es requerida'
-    } else if (!/^\d{2}\/\d{2}$/.test(formData.expiryDate)) {
-      newErrors.expiryDate = 'Formato inválido (MM/AA)'
+    } else if (!/^\d{2}\/\d{4}$/.test(formData.expiryDate)) {
+      newErrors.expiryDate = 'Formato inválido (MM/YYYY)'
     } else {
       const [month, year] = formData.expiryDate.split('/')
-      const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1)
-      const now = new Date()
-      if (expiry < now) {
-        newErrors.expiryDate = 'La tarjeta ha expirado'
+      const monthNum = parseInt(month)
+      const yearNum = parseInt(year)
+      
+      if (monthNum < 1 || monthNum > 12) {
+        newErrors.expiryDate = 'Mes inválido (01-12)'
+      } else {
+        const expiry = new Date(yearNum, monthNum - 1)
+        const now = new Date()
+        if (expiry < now) {
+          newErrors.expiryDate = 'La tarjeta ha expirado'
+        }
       }
     }
 
@@ -116,7 +123,7 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
   const formatExpiryDate = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
     if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4)
+      return v.substring(0, 2) + '/' + v.substring(2, 6)
     }
     return v
   }
@@ -247,9 +254,10 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
               </h5>
               
               <Form.Group className="mb-3">
-                <Form.Label>Número de tarjeta *</Form.Label>
+                <Form.Label htmlFor="cardNumber">Número de tarjeta *</Form.Label>
                 <div className="input-group">
                   <Form.Control
+                    id="cardNumber"
                     type="text"
                     name="cardNumber"
                     value={formData.cardNumber}
@@ -274,15 +282,16 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
 
               <Row>
                 <Col md={6} className="mb-3">
-                  <Form.Label>Fecha de expiración *</Form.Label>
+                  <Form.Label htmlFor="expiryDate">Fecha de expiración *</Form.Label>
                   <Form.Control
+                    id="expiryDate"
                     type="text"
                     name="expiryDate"
                     value={formData.expiryDate}
                     onChange={handleInputChange}
                     isInvalid={!!errors.expiryDate}
-                    placeholder="MM/AA"
-                    maxLength="5"
+                    placeholder="MM/YYYY"
+                    maxLength="7"
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.expiryDate}
@@ -290,8 +299,9 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
                 </Col>
                 
                 <Col md={6} className="mb-3">
-                  <Form.Label>CVC *</Form.Label>
+                  <Form.Label htmlFor="cvc">CVC *</Form.Label>
                   <Form.Control
+                    id="cvc"
                     type="text"
                     name="cvc"
                     value={formData.cvc}
@@ -310,8 +320,9 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
               </Row>
 
               <Form.Group className="mb-3">
-                <Form.Label>Nombre del titular *</Form.Label>
+                <Form.Label htmlFor="cardholderName">Nombre del titular *</Form.Label>
                 <Form.Control
+                  id="cardholderName"
                   type="text"
                   name="cardholderName"
                   value={formData.cardholderName}

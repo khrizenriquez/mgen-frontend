@@ -120,7 +120,7 @@
       },
       "submit": "Siguiente",
       "loading": "Iniciando sesión...",
-      "forgotPassword": "← o regresa al paso anterior.",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
       "noAccount": "¿No tienes cuenta?",
       "createAccount": "Crear cuenta nueva",
       "error": {

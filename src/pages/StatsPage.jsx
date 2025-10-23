@@ -14,44 +14,44 @@ export default function StatsPage() {
   }, [])
 
   if (loading) {
-    return <LoadingSpinner text="Loading statistics..." />
+    return <LoadingSpinner text="Cargando estadísticas..." />
   }
 
   const stats = [
     {
-      name: 'Total Completed Amount',
+      name: 'Monto Total Completado',
       value: statistics?.total_amount_completed ? 
         `$${statistics.total_amount_completed.toLocaleString()}` : '$0',
       icon: 'bi-currency-dollar',
       color: 'text-success',
       bgColor: 'bg-success-subtle',
-      description: 'Total amount from completed donations'
+      description: 'Monto total de donaciones completadas'
     },
     {
-      name: 'Pending Amount',
+      name: 'Monto Pendiente',
       value: statistics?.total_amount_pending ? 
         `$${statistics.total_amount_pending.toLocaleString()}` : '$0',
       icon: 'bi-clock',
       color: 'text-warning',
       bgColor: 'bg-warning-subtle',
-      description: 'Amount waiting to be processed'
+      description: 'Monto esperando ser procesado'
     },
     {
-      name: 'Completed Donations',
+      name: 'Donaciones Completadas',
       value: statistics?.count_completed || 0,
       icon: 'bi-graph-up',
       color: 'text-primary',
       bgColor: 'bg-primary-subtle',
-      description: 'Number of successful donations'
+      description: 'Número de donaciones exitosas'
     },
     {
-      name: 'Success Rate',
+      name: 'Tasa de Éxito',
       value: statistics?.success_rate ? 
         `${statistics.success_rate.toFixed(1)}%` : '0%',
       icon: 'bi-people',
       color: 'text-info',
       bgColor: 'bg-info-subtle',
-      description: 'Percentage of successful donations'
+      description: 'Porcentaje de donaciones exitosas'
     },
   ]
 
@@ -64,9 +64,9 @@ export default function StatsPage() {
     <div className="fade-in">
       {/* Header */}
       <div className="mb-5">
-        <h1 className="h2 fw-bold text-dark">Statistics & Analytics</h1>
+        <h1 className="h2 fw-bold text-dark">Estadísticas y Análisis</h1>
         <p className="text-muted">
-          Comprehensive overview of donation performance
+          Resumen completo del rendimiento de donaciones
         </p>
       </div>
 
@@ -98,35 +98,35 @@ export default function StatsPage() {
         <div className="col-lg-6">
           <div className="card h-100">
             <div className="card-header">
-              <h3 className="card-title h5 mb-0">Detailed Metrics</h3>
+              <h3 className="card-title h5 mb-0">Métricas Detalladas</h3>
             </div>
             <div className="card-body">
               <div className="d-flex justify-content-between mb-3">
-                <dt className="text-muted small">Total Donations</dt>
+                <dt className="text-muted small">Total de Donaciones</dt>
                 <dd className="fw-medium">
                   {(statistics?.count_completed || 0) + (statistics?.count_pending || 0) + (statistics?.count_failed || 0)}
                 </dd>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <dt className="text-muted small">Completed</dt>
+                <dt className="text-muted small">Completadas</dt>
                 <dd className="fw-medium text-success">
                   {statistics?.count_completed || 0}
                 </dd>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <dt className="text-muted small">Pending</dt>
+                <dt className="text-muted small">Pendientes</dt>
                 <dd className="fw-medium text-warning">
                   {statistics?.count_pending || 0}
                 </dd>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <dt className="text-muted small">Failed</dt>
+                <dt className="text-muted small">Fallidas</dt>
                 <dd className="fw-medium text-danger">
                   {statistics?.count_failed || 0}
                 </dd>
               </div>
               <div className="d-flex justify-content-between border-top pt-3">
-                <dt className="text-muted small">Average Donation</dt>
+                <dt className="text-muted small">Donación Promedio</dt>
                 <dd className="fw-medium">
                   ${averageDonation}
                 </dd>
@@ -139,7 +139,7 @@ export default function StatsPage() {
         <div className="col-lg-6">
           <div className="card h-100">
             <div className="card-header">
-              <h3 className="card-title h5 mb-0">Recent Donations</h3>
+              <h3 className="card-title h5 mb-0">Donaciones Recientes</h3>
             </div>
             <div className="card-body">
               {recentDonations.length > 0 ? (
@@ -170,7 +170,7 @@ export default function StatsPage() {
                 </div>
               ) : (
                 <p className="text-muted text-center py-4">
-                  No recent donations
+                  No hay donaciones recientes
                 </p>
               )}
             </div>
@@ -181,7 +181,7 @@ export default function StatsPage() {
       {/* Performance Summary */}
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title h5 mb-0">Performance Summary</h3>
+          <h3 className="card-title h5 mb-0">Resumen de Rendimiento</h3>
         </div>
         <div className="card-body">
           <div className="row g-4 text-center">
@@ -189,9 +189,9 @@ export default function StatsPage() {
               <div className="h2 fw-bold text-success">
                 {statistics?.success_rate ? statistics.success_rate.toFixed(1) : 0}%
               </div>
-              <div className="text-muted">Success Rate</div>
+              <div className="text-muted">Tasa de Éxito</div>
               <div className="mt-2 small text-muted">
-                Based on completed vs failed donations
+                Basado en donaciones completadas vs fallidas
               </div>
             </div>
             
@@ -199,9 +199,9 @@ export default function StatsPage() {
               <div className="h2 fw-bold text-primary">
                 ${averageDonation}
               </div>
-              <div className="text-muted">Average Donation</div>
+              <div className="text-muted">Donación Promedio</div>
               <div className="mt-2 small text-muted">
-                Per completed donation
+                Por donación completada
               </div>
             </div>
             
@@ -209,9 +209,9 @@ export default function StatsPage() {
               <div className="h2 fw-bold text-info">
                 {statistics?.count_pending || 0}
               </div>
-              <div className="text-muted">Pending Processing</div>
+              <div className="text-muted">Pendientes de Procesar</div>
               <div className="mt-2 small text-muted">
-                Awaiting manual processing
+                En espera de procesamiento manual
               </div>
             </div>
           </div>

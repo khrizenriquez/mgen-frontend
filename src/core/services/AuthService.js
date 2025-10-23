@@ -158,6 +158,8 @@ class AuthService {
       const user = {
         id: userInfo.id,
         email: userInfo.email,
+        first_name: userInfo.first_name,
+        last_name: userInfo.last_name,
         roles: userInfo.roles,
         loginAt: new Date().toISOString()
       }

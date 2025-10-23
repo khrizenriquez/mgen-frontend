@@ -172,8 +172,9 @@ const DonorInformation = ({ donationData, onComplete, onBack }) => {
             
             <Row>
               <Col md={6} className="mb-3">
-                <Form.Label>Nombre completo *</Form.Label>
+                <Form.Label htmlFor="fullName">Nombre completo *</Form.Label>
                 <Form.Control
+                  id="fullName"
                   type="text"
                   name="fullName"
                   value={formData.fullName}
@@ -187,8 +188,9 @@ const DonorInformation = ({ donationData, onComplete, onBack }) => {
               </Col>
               
               <Col md={6} className="mb-3">
-                <Form.Label>Correo electrónico *</Form.Label>
+                <Form.Label htmlFor="email">Correo electrónico *</Form.Label>
                 <Form.Control
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -204,8 +206,9 @@ const DonorInformation = ({ donationData, onComplete, onBack }) => {
 
             <Row>
               <Col md={6} className="mb-3">
-                <Form.Label>Número de teléfono *</Form.Label>
+                <Form.Label htmlFor="phone">Número de teléfono *</Form.Label>
                 <Form.Control
+                  id="phone"
                   type="tel"
                   name="phone"
                   value={formData.phone}
@@ -219,8 +222,9 @@ const DonorInformation = ({ donationData, onComplete, onBack }) => {
               </Col>
               
               <Col md={6} className="mb-3">
-                <Form.Label>NIT (opcional)</Form.Label>
+                <Form.Label htmlFor="nit">NIT (opcional)</Form.Label>
                 <Form.Control
+                  id="nit"
                   type="text"
                   name="nit"
                   value={formData.nit}

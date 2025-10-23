@@ -200,6 +200,6 @@ describe('LoginPage', () => {
     )
 
     expect(screen.getByRole('link', { name: /crear cuenta nueva/i })).toHaveAttribute('href', '/register')
-    expect(screen.getByRole('link', { name: /o regresa al paso anterior/i })).toHaveAttribute('href', '/forgot-password')
+    expect(screen.getByRole('link', { name: /¿Olvidaste tu contraseña\?/i })).toHaveAttribute('href', '/forgot-password')
   })
 })

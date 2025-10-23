@@ -4,6 +4,7 @@ import { Container, Card, Row, Col, Button, Form, Alert, Modal } from 'react-boo
 const DonatePage = () => {
   const [currentStep, setCurrentStep] = useState('amount') // amount, details, processing, success
   const [showModal, setShowModal] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [donationData, setDonationData] = useState({
     amount: '',
     customAmount: '',
@@ -60,7 +61,8 @@ const DonatePage = () => {
            donationData.email && 
            donationData.cardNumber && 
            donationData.expiryDate && 
-           donationData.cvc
+           donationData.cvc &&
+           termsAccepted
   }
 
   const handleNext = () => {
@@ -281,7 +283,9 @@ const DonatePage = () => {
             id="terms"
             label="Al avanzar, aceptas nuestros términos & condiciones."
             className="mb-3 small"
-            defaultChecked
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            required
           />
 
           <div className="d-grid gap-2">

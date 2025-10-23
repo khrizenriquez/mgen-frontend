@@ -33,8 +33,34 @@ const DonorInformation = ({ donationData, onComplete, onBack }) => {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'El número de teléfono es requerido'
-    } else if (!/^[\+]?[\d\s\-\(\)]{8,}$/.test(formData.phone)) {
-      newErrors.phone = 'Ingresa un número de teléfono válido'
+    } else {
+      // Remove all non-digit characters except the + at the start
+      const cleanPhone = formData.phone.replace(/[^\d+]/g, '')
+      
+      // Guatemala phone validation
+      // Format: +502 XXXX-XXXX (8 digits after country code)
+      // or just XXXX-XXXX (8 digits)
+      if (cleanPhone.startsWith('+502')) {
+        // International format
+        const digits = cleanPhone.substring(4) // Remove +502
+        if (digits.length !== 8) {
+          newErrors.phone = 'El número debe tener 8 dígitos después del código +502'
+        } else if (!/^[2-7]/.test(digits)) {
+          newErrors.phone = 'El número debe iniciar con dígito del 2 al 7'
+        }
+      } else if (cleanPhone.startsWith('+')) {
+        // Other international format - allow it
+        if (cleanPhone.length < 10) {
+          newErrors.phone = 'Número internacional incompleto'
+        }
+      } else {
+        // Local format - 8 digits
+        if (cleanPhone.length !== 8) {
+          newErrors.phone = 'El número debe tener exactamente 8 dígitos'
+        } else if (!/^[2-7]/.test(cleanPhone)) {
+          newErrors.phone = 'El número debe iniciar con dígito del 2 al 7'
+        }
+      }
     }
 
     // NIT validation for Guatemala

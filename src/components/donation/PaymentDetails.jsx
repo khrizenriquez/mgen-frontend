@@ -69,14 +69,21 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
     // Expiry date validation
     if (!formData.expiryDate) {
       newErrors.expiryDate = 'La fecha de expiración es requerida'
-    } else if (!/^\d{2}\/\d{2}$/.test(formData.expiryDate)) {
-      newErrors.expiryDate = 'Formato inválido (MM/AA)'
+    } else if (!/^\d{2}\/\d{4}$/.test(formData.expiryDate)) {
+      newErrors.expiryDate = 'Formato inválido (MM/YYYY)'
     } else {
       const [month, year] = formData.expiryDate.split('/')
-      const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1)
-      const now = new Date()
-      if (expiry < now) {
-        newErrors.expiryDate = 'La tarjeta ha expirado'
+      const monthNum = parseInt(month)
+      const yearNum = parseInt(year)
+      
+      if (monthNum < 1 || monthNum > 12) {
+        newErrors.expiryDate = 'Mes inválido (01-12)'
+      } else {
+        const expiry = new Date(yearNum, monthNum - 1)
+        const now = new Date()
+        if (expiry < now) {
+          newErrors.expiryDate = 'La tarjeta ha expirado'
+        }
       }
     }
 
@@ -116,7 +123,7 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
   const formatExpiryDate = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
     if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4)
+      return v.substring(0, 2) + '/' + v.substring(2, 6)
     }
     return v
   }
@@ -281,8 +288,8 @@ const PaymentDetails = ({ donationData, organization, onComplete, onBack }) => {
                     value={formData.expiryDate}
                     onChange={handleInputChange}
                     isInvalid={!!errors.expiryDate}
-                    placeholder="MM/AA"
-                    maxLength="5"
+                    placeholder="MM/YYYY"
+                    maxLength="7"
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.expiryDate}

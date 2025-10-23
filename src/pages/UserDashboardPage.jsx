@@ -6,8 +6,10 @@ import { useState, useEffect } from 'react'
 import { Card, Row, Col, Button, Badge, ProgressBar } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import api from '../core/services/api.js'
+import AuthService from '../core/services/AuthService.js'
 
 export default function UserDashboardPage() {
+  const [currentUser, setCurrentUser] = useState(AuthService.getCurrentUser())
   const [userStats, setUserStats] = useState({
     totalDonations: 0,
     totalAmount: 0,
@@ -21,6 +23,14 @@ export default function UserDashboardPage() {
   const [error, setError] = useState(null)
 
   const [upcomingEvents, setUpcomingEvents] = useState([])
+
+  // Subscribe to auth state changes
+  useEffect(() => {
+    const unsubscribe = AuthService.subscribe((user) => {
+      setCurrentUser(user)
+    })
+    return unsubscribe
+  }, [])
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -44,6 +54,28 @@ export default function UserDashboardPage() {
         const eventsResponse = await api.get('/dashboard/events/upcoming')
         const eventsData = eventsResponse.data
 
+        // Load user's recent donations to show as activity
+        let activityData = []
+        try {
+          const donationsResponse = await api.get('/api/v1/donations', {
+            params: { limit: 5, offset: 0 }
+          })
+          
+          if (donationsResponse.data && donationsResponse.data.donations) {
+            // Convert donations to activity format
+            activityData = donationsResponse.data.donations.map(donation => ({
+              type: 'donation',
+              message: `Donación de ${donation.formatted_amount || 'Q' + donation.amount_gtq}`,
+              timestamp: donation.created_at,
+              donation_id: donation.id
+            }))
+          }
+        } catch (donError) {
+          console.warn('Could not load donations for activity:', donError)
+          // Fallback to dashboard recent_activity if available
+          activityData = dashboardData.recent_activity || []
+        }
+
         setUserStats({
           totalDonations: dashboardData.stats.total_donations || 0,
           totalAmount: dashboardData.stats.total_amount_gtq || 0,
@@ -57,7 +89,7 @@ export default function UserDashboardPage() {
         setUpcomingEvents(eventsData || [])
 
         // Set recent activity
-        setRecentActivity(dashboardData.recent_activity || [])
+        setRecentActivity(activityData)
 
       } catch (err) {
         console.error('Error loading user dashboard data:', err)
@@ -260,10 +292,16 @@ export default function UserDashboardPage() {
               <Card.Body className="text-center">
                 <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                      style={{width: '60px', height: '60px'}}>
-                  <span className="text-primary fw-bold fs-4">JP</span>
+                  <span className="text-primary fw-bold fs-4">
+                    {currentUser?.first_name?.charAt(0) || ''}{currentUser?.last_name?.charAt(0) || ''}
+                  </span>
                 </div>
-                <h6 className="mb-1">Juan Pérez</h6>
-                <p className="text-muted small mb-2">juan@example.com</p>
+                <h6 className="mb-1">
+                  {currentUser?.first_name && currentUser?.last_name
+                    ? `${currentUser.first_name} ${currentUser.last_name}`
+                    : currentUser?.email || 'Usuario'}
+                </h6>
+                <p className="text-muted small mb-2">{currentUser?.email || ''}</p>
                 <Badge bg="primary">Usuario Activo</Badge>
                 <div className="mt-3 pt-3 border-top">
                   <small className="text-muted">Miembro desde</small>
@@ -295,7 +333,12 @@ export default function UserDashboardPage() {
                     No hay eventos próximos
                   </div>
                 )}
-                <Button variant="outline-primary" size="sm" className="w-100">
+                <Button 
+                  variant="outline-primary" 
+                  size="sm" 
+                  className="w-100"
+                  onClick={() => alert('La funcionalidad de eventos estará disponible próximamente')}
+                >
                   Ver todos los eventos
                 </Button>
               </Card.Body>

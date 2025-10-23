@@ -54,6 +54,18 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeInTheDocument()
   })
 
+  test('displays forgot password link with correct text', () => {
+    render(
+      <TestWrapper>
+        <LoginPage />
+      </TestWrapper>
+    )
+
+    const forgotPasswordLink = screen.getByText('¿Olvidaste tu contraseña?')
+    expect(forgotPasswordLink).toBeInTheDocument()
+    expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password')
+  })
+
   test('shows validation errors for empty fields', async () => {
     render(
       <TestWrapper>
